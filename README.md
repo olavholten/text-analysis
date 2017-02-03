@@ -11,14 +11,15 @@ The documents must be cleaned before being used.
 <pre>
 Library library = new Library(3, ParseType.REMOVE_TERMS_WITH_ONLY_STOP_WORDS); // Retrieves a document that will parse data for tri-grams (groups of three words).
 library.addStopWordList("en", new String[]{"and","or","if","what"}); // Must be clean words without extra characters such as punctuation marcs etc.
-
+<br/>
 Document document1 = library.addAndGetNewDocument();
 Document document2 = library.addAndGetNewDocument();
-
+<br/>
 // Document data must be cleaned from strange characters etc but still contain scentence delimiters (punctuation mark, exclamation marks, questions marks etc).
+<br/>
 document1.setName("All chars").setHeadline("All chars in the alphabet").addData("The lazy dog ").addData("jumps over the quick brown fox. The end!"); 
-document2.addData("Why does this document has neither name nor hedline? Because it's test data!");
-
+document2.addData("Why does this document have neither name nor hedline? Because it's test data!");
+<br/>
 List<TF> tfList = document1.getTF(50, true); // Retrieves the 50 most common words with stop word list 
 List<TFIDC> tfidcList = document1.getTFIDC(50); // Retrieves the words with the 50 highest TF-IDC scores.
 </pre>

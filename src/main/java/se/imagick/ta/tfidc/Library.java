@@ -5,4 +5,20 @@ package se.imagick.ta.tfidc;
  */
 public class Library {
 
+    private final int maxNoOfWordsInTerms;
+    private final ParseType parseType;
+
+    public Library(int maxNoOfWordsInTerms, ParseType parseType) {
+
+        this.maxNoOfWordsInTerms = maxNoOfWordsInTerms;
+        this.parseType = parseType;
+    }
+
+    public void addStopWordList(String en, String[] strings) {
+
+    }
+
+    public Document addAndGetNewDocument() {
+        return null;
+    }
 }
