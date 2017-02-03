@@ -1,4 +1,4 @@
-package se.imagick.ta.cleaning;
+package se.imagick.ta.filter;
 
 /**
  * Created by Olav Holten on 2017-01-29
