@@ -1,11 +1,8 @@
 package se.imagick.ta.tfidc;
 
 import se.imagick.ta.misc.Decomposer;
-import se.imagick.ta.misc.Counter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -17,8 +14,9 @@ public class Document {
     private String headline;
     private StringBuilder content = new StringBuilder();
     private Library library;
-    private List<TF> termFrequencies = new ArrayList<>(2048);
-    private Counter totDocumentTermsOccurencyCount;
+    private Map<String, TF> termFrequencies = new HashMap<>(2048);
+    private double totalTermCount;
+    private boolean isClosed;
 
     public Document(Library library) {
         this.library = library;
@@ -35,26 +33,69 @@ public class Document {
     }
 
     public Document addText(String text) {
+
+        if (isClosed) {
+            throw new IllegalStateException("The document is closed!");
+        }
+
         content.append(text);
         return this;
     }
 
     public void close() {
         // start processing the text.
+        isClosed = true;
+        decomposeAndAddTerms(this.name);
+        decomposeAndAddTerms(this.headline);
+        decomposeAndAddTerms(this.content.toString());
+    }
 
-        // get tot noOf words and calculate tf. Set the TF  tot term count (common instance for all TF in document).
-        List<String> sentenceList = Decomposer.documentToSentences(content.toString());
-        List<String> collect = sentenceList.stream().map(Decomposer::scentenceToTerms).flatMap(Collection::stream).collect(Collectors.toList());
-        collect.forEach(w -> library.addWord(w, this)); // TODO Fix the String caching.
+    private void decomposeAndAddTerms(String content) {
+        if (content != null) {
+            List<String> sentenceList = Decomposer.documentToSentences(content);
+            List<String> termList = sentenceList.stream()
+                    .map(String::trim)
+                    .filter(e -> !e.isEmpty())
+                    .map(Decomposer::scentenceToTerms)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
 
-        termFrequencies.add(new TF("a term", this.totDocumentTermsOccurencyCount)); // The counter is common for all TF
+            termList.forEach(this::addTerm);
+        }
+
     }
 
     public List<TF> getTF(int maxNoOfTerms) {
-        return this.termFrequencies.subList(0, maxNoOfTerms);
+
+        if (!isClosed) {
+            throw new IllegalStateException("The document is not closed!");
+        }
+        return this.termFrequencies.values().stream().sorted(this::compareTF).limit(maxNoOfTerms).collect(Collectors.toList());
     }
 
     public List<TFIDC> getTFIDC(int maxNoOfTerms) {
         return null;
+    }
+
+    public double getTotalTermCount() {
+        return totalTermCount;
+    }
+
+    private void addTerm(String term) {
+
+        totalTermCount++;
+        TF tf = termFrequencies.get(term);
+
+        if (tf == null) {
+            term = library.addTerm(term, this); // Term String instance reuse.
+            termFrequencies.put(term, new TF(term, this));
+        } else {
+            tf.increaseTermOccurencyByOne();
+        }
+    }
+
+    private int compareTF(TF tf1, TF tf2) {
+        double delta = tf2.getFrequency() - tf1.getFrequency();
+        return (delta < 0 ? -1 : (delta == 0) ? 0 : 1);
     }
 }

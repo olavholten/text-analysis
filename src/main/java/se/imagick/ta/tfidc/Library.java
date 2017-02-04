@@ -16,10 +16,14 @@ public class Library {
     private final int maxNoOfWordsInTerms;
     private final ParseType parseType;
     private final List<StopWords> stopWordListCollection = new ArrayList<>();
-    private final List<Document> documentList = new ArrayList<>(1024);
-    private final Map<String, Map<Document, Document>> wordList = new HashMap<>(2048);
+    private final List<Document> documentList = new ArrayList<>(1024); // Memory is cheap, cores are expensive.
+    private final Map<String, DocumentHolder> wordList = new HashMap<>();
 
-    public Library(int maxNoOfWordsInTerms, ParseType parseType) {
+    public Library(ParseType parseType) {
+        this(1, parseType);
+    }
+
+    private Library(int maxNoOfWordsInTerms, ParseType parseType) { // bi-grams, tri-grams etc not implemented.
 
         this.maxNoOfWordsInTerms = maxNoOfWordsInTerms;
         this.parseType = parseType;
@@ -37,8 +41,24 @@ public class Library {
         return document;
     }
 
-    void addWord(String word, Document document) {
-        // TODO Return the String instance used to store the hashmap entry, in order to save memory.
-        wordList.computeIfAbsent(word, w -> new HashMap<Document, Document>()).put(document, document);
+    public String addTerm(String term, Document document) {
+        // Returns the same String instance, saving memory.
+        return wordList.computeIfAbsent(term, t -> new DocumentHolder(t, document)).add(document).term;
+    }
+
+    private class DocumentHolder{
+
+        String term;
+        List<Document> documentList = new ArrayList<>();
+
+        public DocumentHolder(String term, Document document) {
+            this.term = term;
+            this.documentList.add(document);
+        }
+
+        public DocumentHolder add(Document document) {
+            documentList.add(document);
+            return this;
+        }
     }
 }

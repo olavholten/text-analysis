@@ -8,23 +8,28 @@ import se.imagick.ta.misc.Counter;
 public class TF {
 
     private String term;
-    private Counter documentTermsCounter; // Common counter for all words/terms in the document
-    private long noOfOccurenciesOfTerm;
+    private Document document;
+    private double noOfOccurenciesOfTerm;
 
-    public TF(String term, Counter documentTermsCount){
+    public TF(String term, Document document){
         this.term = term;
-        this.documentTermsCounter = documentTermsCount;
+        this.document = document;
+        this.noOfOccurenciesOfTerm = 1;
     }
 
     public String getTerm() {
         return term;
     }
 
-    public long getFrequency() {
-        return noOfOccurenciesOfTerm / documentTermsCounter.getCount();
+    public double getFrequency() {
+        return noOfOccurenciesOfTerm / document.getTotalTermCount();
     }
 
     public void increaseTermOccurencyByOne() {
         this.noOfOccurenciesOfTerm++;
+    }
+
+    public String toString() {
+        return "Term: " + term + ", freq: " + getFrequency();
     }
 }
