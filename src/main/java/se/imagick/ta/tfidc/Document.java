@@ -1,6 +1,6 @@
 package se.imagick.ta.tfidc;
 
-import se.imagick.ta.filter.Decomposer;
+import se.imagick.ta.misc.Decomposer;
 import se.imagick.ta.misc.Counter;
 
 import java.util.ArrayList;
@@ -46,6 +46,8 @@ public class Document {
         List<String> sentenceList = Decomposer.documentToSentences(content.toString());
         List<String> collect = sentenceList.stream().map(Decomposer::scentenceToTerms).flatMap(Collection::stream).collect(Collectors.toList());
         collect.forEach(w -> library.addWord(w, this)); // TODO Fix the String caching.
+
+        termFrequencies.add(new TF("a term", this.totDocumentTermsOccurencyCount)); // The counter is common for all TF
     }
 
     public List<TF> getTF(int maxNoOfTerms) {

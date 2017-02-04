@@ -3,7 +3,7 @@ package se.imagick.ta.tfidc;
 import se.imagick.ta.misc.Counter;
 
 /**
- * Created by john on 2017-02-03
+ * Created by Olav Holten on 2017-02-03
  */
 public class TF {
 

@@ -1,4 +1,4 @@
-package se.imagick.ta.filter;
+package se.imagick.ta.misc;
 
 import java.util.Arrays;
 import java.util.List;

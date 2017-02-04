@@ -2,7 +2,7 @@ package se.imagick.ta.tfidc;
 
 import org.junit.Test;
 import se.imagick.ta.filter.ParseType;
-import se.imagick.ta.filter.StopWordsSwedish;
+import se.imagick.ta.language.StopWordsSwedish;
 
 import java.util.List;
 

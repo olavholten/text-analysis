@@ -1,4 +1,4 @@
-package se.imagick.ta.filter;
+package se.imagick.ta.language;
 
 import java.util.Collections;
 import java.util.List;

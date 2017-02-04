@@ -1,9 +1,9 @@
-package se.imagick.ta.filter;
+package se.imagick.ta.language;
 
 import java.util.List;
 
 /**
- * Created by john on 2017-02-03
+ * Created by Olav Holten on 2017-02-03
  */
 public interface StopWords {
 
