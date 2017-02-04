@@ -1,5 +1,6 @@
 package se.imagick.ta.tfidc;
 
+import se.imagick.ta.filter.ParseType;
 import se.imagick.ta.filter.StopWords;
 
 import java.util.ArrayList;

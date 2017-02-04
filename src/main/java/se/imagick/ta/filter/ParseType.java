@@ -1,4 +1,4 @@
-package se.imagick.ta.tfidc;
+package se.imagick.ta.filter;
 
 /**
  * Created by john on 2017-02-03

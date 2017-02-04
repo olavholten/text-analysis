@@ -1,6 +1,7 @@
 package se.imagick.ta.tfidc;
 
 import org.junit.Test;
+import se.imagick.ta.filter.ParseType;
 
 import java.util.List;
 
