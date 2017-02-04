@@ -15,9 +15,9 @@ public class Library {
 
     private final int maxNoOfWordsInTerms;
     private final ParseType parseType;
-    private final List<StopWords> stopWordsList = new ArrayList<>();
-    private final List<Document> documentList = new ArrayList<>();
-    private final Map<String, Map<Document, Document>> wordList = new HashMap<>();
+    private final List<StopWords> stopWordListCollection = new ArrayList<>();
+    private final List<Document> documentList = new ArrayList<>(1024);
+    private final Map<String, Map<Document, Document>> wordList = new HashMap<>(2048);
 
     public Library(int maxNoOfWordsInTerms, ParseType parseType) {
 
@@ -26,7 +26,7 @@ public class Library {
     }
 
     public void addStopWordList(StopWords stopWords) {
-        stopWordsList.add(stopWords);
+        stopWordListCollection.add(stopWords);
     }
 
 

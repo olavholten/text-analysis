@@ -2,6 +2,7 @@ package se.imagick.ta.tfidc;
 
 import org.junit.Test;
 import se.imagick.ta.filter.ParseType;
+import se.imagick.ta.filter.StopWordsSwedish;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class TfIdfIF {
     @Test
     public void happyPath() {
         Library library = new Library(3, ParseType.REMOVE_TERMS_WITH_ONLY_STOP_WORDS); // Retrieves a document that will parse data for tri-grams (groups of three words).
-        library.addStopWordList("en", new String[]{"and","or","if","what"}); // Must be clean words without extra characters such as punctuation marcs etc.
+        library.addStopWordList(new StopWordsSwedish());
 
         Document document1 = library.addAndGetNewDocument();
         Document document2 = library.addAndGetNewDocument();
