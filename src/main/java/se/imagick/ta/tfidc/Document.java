@@ -26,6 +26,12 @@ public class Document {
         return this;
     }
 
+    public void close() {
+        // start processing the text.
+
+
+    }
+
     public List<TF> getTF(int maxNoOfTerms) {
         return null;
     }
