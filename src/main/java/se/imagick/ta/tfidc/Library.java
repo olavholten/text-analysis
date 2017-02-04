@@ -31,7 +31,7 @@ public class Library {
 
     public Document addAndGetNewDocument() {
 
-        Document document = new Document();
+        Document document = new Document(this);
         documentList.add(document);
         return document;
     }
