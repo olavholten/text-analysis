@@ -12,7 +12,7 @@ public class Decomposer {
 
     public static List<String> documentToSentences(String content) {
         // TODO better decomp needed (parentheses, question mark, comma etc).
-        List<String> sentenceList = Arrays.asList(content.split("\\.")).stream()
+        List<String> sentenceList = Arrays.stream(content.split("\\."))
                 .map(String::toLowerCase)
                 .flatMap(e -> Arrays.stream(e.split("\\!")))
                 .flatMap(e -> Arrays.stream(e.split("\\?")))
@@ -33,6 +33,6 @@ public class Decomposer {
     }
 
     public static List<String> termsToWords(String term) {
-        return Arrays.asList(term.split(" "));// Blunt impl...
+        return Arrays.stream(term.split(" ")).map(String::trim).filter(e -> !e.isEmpty()).collect(Collectors.toList());// Blunt impl...
     }
 }
