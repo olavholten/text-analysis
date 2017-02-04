@@ -24,7 +24,6 @@ public class Library {
     }
 
     private Library(int maxNoOfWordsInTerms, ParseType parseType) { // bi-grams, tri-grams etc not implemented.
-
         this.maxNoOfWordsInTerms = maxNoOfWordsInTerms;
         this.parseType = parseType;
     }
@@ -35,19 +34,19 @@ public class Library {
 
 
     public Document addAndGetNewDocument() {
-
         Document document = new Document(this);
         documentList.add(document);
         return document;
     }
+
 
     public String addTerm(String term, Document document) {
         // Returns the same String instance, saving memory.
         return wordList.computeIfAbsent(term, t -> new DocumentHolder(t, document)).add(document).term;
     }
 
-    private class DocumentHolder{
 
+    private class DocumentHolder{
         String term;
         List<Document> documentList = new ArrayList<>();
 

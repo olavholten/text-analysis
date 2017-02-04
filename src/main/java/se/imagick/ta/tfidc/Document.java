@@ -51,6 +51,7 @@ public class Document {
     }
 
     private void decomposeAndAddTerms(String content) {
+
         if (content != null) {
             List<String> sentenceList = Decomposer.documentToSentences(content);
             List<String> termList = sentenceList.stream()
@@ -70,6 +71,7 @@ public class Document {
         if (!isClosed) {
             throw new IllegalStateException("The document is not closed!");
         }
+
         return this.termFrequencies.values().stream().sorted(this::compareTF).limit(maxNoOfTerms).collect(Collectors.toList());
     }
 
@@ -77,7 +79,7 @@ public class Document {
         return null;
     }
 
-    public double getTotalTermCount() {
+    double getTotalTermCount() {
         return totalTermCount;
     }
 
