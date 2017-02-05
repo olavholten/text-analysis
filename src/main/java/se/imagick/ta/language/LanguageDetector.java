@@ -7,7 +7,9 @@ import java.util.List;
 /**
  * Detects a document language by filtering it with several stop word lists.
  * The language associated with the stop word list that filters out the most words
- * is assumed to be the correct one.
+ * is assumed to be the correct one. A rather naive method that needs more than a few words.
+ * Could also be used to detect the document category by using stop word lists that
+ * contains category specific words.
  */
 public class LanguageDetector {
 
