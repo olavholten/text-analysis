@@ -1,6 +1,7 @@
 package se.imagick.ta.language;
 
-import java.util.Collections;
+import se.imagick.ta.misc.Decomposer;
+
 import java.util.List;
 
 /**
@@ -9,11 +10,24 @@ import java.util.List;
  * is assumed to be the correct one.
  */
 public class LanguageDetector {
-    public static  String detect(String document){
-        return detect(document, Collections.singletonList(new StopWordsEnglish()));
+
+    public static String detect(String document, StopWords... stopWordsList) {
+
+        List<String> words = Decomposer.scentenceToTerms(document);
+        String reccordLanguage = "Not detected";
+        double reccord = 0;
+
+        for(StopWords stopWords : stopWordsList) {
+
+            double noOfStopWordsInText = (double) words.stream().filter(stopWords::isStopWord).count();
+
+            if (noOfStopWordsInText > reccord) {
+                reccord = noOfStopWordsInText;
+                reccordLanguage = stopWords.getLanguage();
+            }
+        }
+
+        return reccordLanguage;
     }
 
-    private static String detect(String document, List<StopWords> stopWordsList) {
-        return null;
-    }
 }

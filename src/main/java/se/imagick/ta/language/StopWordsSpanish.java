@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by john on 2017-02-04
  */
-public class StopWordsSpanish implements StopWords{
+public class StopWordsSpanish extends StopWords{
 
      private static final List<String> SPANISH_STOP_WORDS = Arrays.asList("ahora", "al", "algo", "alli", "antes", "aquel", "aquella", "aqui", "asi", "aunque",
              "años", "bien", "by", "cabeza", "casa",  "casi", "como", "con", "cuando", "de", "del", "desde", "después", "dia", "dijo", "don", "donde", "dos",

@@ -1,10 +1,12 @@
 package se.imagick.ta.tfidc;
 
+import org.junit.Assert;
 import org.junit.Test;
 import se.imagick.ta.filter.ParseType;
 import se.imagick.ta.language.StopWordsSwedish;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Integration test.
@@ -21,9 +23,6 @@ public class TFIDFIT {
         Document document1 = library.addAndGetNewDocument();
         Document document2 = library.addAndGetNewDocument();
 
-// Document data must be cleaned from strange characters etc but must still contain
-// scentence delimiters (punctuation mark, exclamation marks, questions marks etc).
-
         document1.setName("All chars")
                 .setHeadline("All the chars in the alphabet is in this document")
                 .addText("The lazy dog ")
@@ -37,9 +36,10 @@ public class TFIDFIT {
         List<TF> tfList = document2.getTF(50); // Retrieves the 50 most common words with stop word list
         List<TFIDC> tfidcList = document1.getTFIDC(50); // Retrieves the words with the 50 highest TF-IDC scores.
 
-        tfList.forEach(System.out::println);
-        System.out.println("----------");
         tfidcList.forEach(System.out::println);
 
+        Assert.assertEquals(0d, tfidcList.get(tfidcList.size() - 1).getTfIdc(), 0);
+        int stopWordSize = tfidcList.stream().filter(e -> e.getTfIdc() == 0d).collect(Collectors.toList()).size();
+        Assert.assertEquals(5, stopWordSize);
     }
 }

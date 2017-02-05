@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by Olav Holten on 2017-02-03
  */
-public class StopWordsEnglish implements StopWords {
+public class StopWordsEnglish extends StopWords {
     @Override
     public List<String> getWordList() {
         return Arrays.asList("and", "or", "if", "what");
