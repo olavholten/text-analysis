@@ -1,7 +1,5 @@
 package se.imagick.ta.tfidc;
 
-import se.imagick.ta.misc.Counter;
-
 /**
  * Created by Olav Holten on 2017-02-03
  */
