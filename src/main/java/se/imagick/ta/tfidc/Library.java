@@ -46,7 +46,7 @@ public class Library {
     }
 
 
-    private class DocumentHolder{
+    private class DocumentHolder {
         String term;
         List<Document> documentList = new ArrayList<>();
 
@@ -58,5 +58,13 @@ public class Library {
             documentList.add(document);
             return this;
         }
+    }
+
+    double getNoOfDocumentsInLibrary() {
+        return documentList.size();
+    }
+
+    double getNoOfDocumentsWithTerm(String term) {
+        return wordList.get(term).documentList.size();
     }
 }

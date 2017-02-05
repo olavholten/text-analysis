@@ -4,6 +4,7 @@ import se.imagick.ta.misc.Decomposer;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Olav Holten on 2017-01-29
@@ -76,7 +77,20 @@ public class Document {
     }
 
     public List<TFIDC> getTFIDC(int maxNoOfTerms) {
-        return null;
+
+        if (!isClosed) {
+            throw new IllegalStateException("The document is not closed!");
+        }
+
+        double totNoOfDocs = this.library.getNoOfDocumentsInLibrary();
+
+        List<TFIDC> tfIdcList = termFrequencies.values().stream()
+                .map(tf -> new TFIDC(tf.getTerm(), tf.getFrequency(), this.library.getNoOfDocumentsWithTerm(tf.getTerm()), totNoOfDocs))
+                .sorted(this::compareTFIDC)
+                .limit(maxNoOfTerms)
+                .collect(Collectors.toList());
+
+        return tfIdcList;
     }
 
     double getTotalTermCount() {
@@ -98,6 +112,11 @@ public class Document {
 
     private int compareTF(TF tf1, TF tf2) {
         double delta = tf2.getFrequency() - tf1.getFrequency();
+        return (delta < 0 ? -1 : (delta == 0) ? 0 : 1);
+    }
+
+    private int compareTFIDC(TFIDC tfidc1, TFIDC tfidc2) {
+        double delta = tfidc1.getTfIdc() - tfidc2.getTfIdc();
         return (delta < 0 ? -1 : (delta == 0) ? 0 : 1);
     }
 }

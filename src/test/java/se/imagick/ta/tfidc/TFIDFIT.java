@@ -25,18 +25,21 @@ public class TFIDFIT {
 // scentence delimiters (punctuation mark, exclamation marks, questions marks etc).
 
         document1.setName("All chars")
-                .setHeadline("All chars in the alphabet")
+                .setHeadline("All the chars in the alphabet is in this document")
                 .addText("The lazy dog ")
                 .addText("jumps over the quick brown fox. The end!")
                 .close();
 
         document2.addText("Why does this document have neither name nor hedline? Because ")
-                .addText("it's test data, and such does not have to have that!")
+                .addText("it's test data, and such does not have to have that at all! That is the truth")
                 .close();
 
         List<TF> tfList = document2.getTF(50); // Retrieves the 50 most common words with stop word list
         List<TFIDC> tfidcList = document1.getTFIDC(50); // Retrieves the words with the 50 highest TF-IDC scores.
 
         tfList.forEach(System.out::println);
+        System.out.println("----------");
+        tfidcList.forEach(System.out::println);
+
     }
 }
