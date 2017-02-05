@@ -42,7 +42,7 @@ public class Library {
 
     public String addTerm(String term, Document document) {
         // Returns the same String instance, saving memory.
-        return wordList.computeIfAbsent(term, t -> new DocumentHolder(t, document)).add(document).term;
+        return wordList.computeIfAbsent(term, DocumentHolder::new).add(document).term;
     }
 
 
@@ -50,9 +50,8 @@ public class Library {
         String term;
         List<Document> documentList = new ArrayList<>();
 
-        public DocumentHolder(String term, Document document) {
+        public DocumentHolder(String term) {
             this.term = term;
-            this.documentList.add(document);
         }
 
         public DocumentHolder add(Document document) {

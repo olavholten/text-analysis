@@ -30,7 +30,8 @@ public class TFIDFIT {
                 .addText("jumps over the quick brown fox. The end!")
                 .close();
 
-        document2.addText("Why does this document have neither name nor hedline? Because it's test data, and such does not have that!")
+        document2.addText("Why does this document have neither name nor hedline? Because ")
+                .addText("it's test data, and such does not have to have that!")
                 .close();
 
         List<TF> tfList = document2.getTF(50); // Retrieves the 50 most common words with stop word list
