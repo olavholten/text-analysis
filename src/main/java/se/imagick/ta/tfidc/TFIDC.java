@@ -10,7 +10,7 @@ public class TFIDC {
 
     public TFIDC(String term, double frequency, double noOfDocsWithTerm, double totNoOfDocs) {
         this.term = term;
-        this.tfIdc = frequency * Math.log(noOfDocsWithTerm / totNoOfDocs);
+        this.tfIdc = frequency * Math.log(totNoOfDocs / noOfDocsWithTerm);
     }
 
     public String getTerm() {
