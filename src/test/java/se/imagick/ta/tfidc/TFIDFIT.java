@@ -42,4 +42,29 @@ public class TFIDFIT {
         int stopWordSize = tfidcList.stream().filter(e -> e.getTfIdc() == 0d).collect(Collectors.toList()).size();
         Assert.assertEquals(5, stopWordSize);
     }
+
+    @Test
+    public void smallHappyPath() {
+
+        Library library = new Library(ParseType.REMOVE_ALL_STOP_WORDS);
+        library.addStopWordList(new StopWordsSwedish());
+
+        Document document1 = library.addAndGetNewDocument();
+        Document document2 = library.addAndGetNewDocument();
+
+        document1.addText("a cat is sitting on your face")
+                .close();
+
+        document2.addText("a dog is sitting on your bed")
+                .close();
+
+        List<TF> tfList = document2.getTF(50); // Retrieves the 50 most common words with stop word list
+        List<TFIDC> tfidcList = document1.getTFIDC(50); // Retrieves the words with the 50 highest TF-IDC scores.
+
+        tfidcList.forEach(System.out::println);
+
+        Assert.assertEquals(0d, tfidcList.get(tfidcList.size() - 1).getTfIdc(), 0);
+        int valueWordSize = tfidcList.stream().filter(e -> e.getTfIdc() != 0d).collect(Collectors.toList()).size();
+        Assert.assertEquals(2, valueWordSize);
+    }
 }

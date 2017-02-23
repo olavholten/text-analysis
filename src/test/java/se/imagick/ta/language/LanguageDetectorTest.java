@@ -1,4 +1,4 @@
-package se.imagick.ta;
+package se.imagick.ta.language;
 
 import org.junit.Assert;
 import org.junit.Test;
