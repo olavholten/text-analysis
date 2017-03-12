@@ -40,7 +40,7 @@ public class TFIDFIT {
 
         Assert.assertEquals(0d, tfidcList.get(tfidcList.size() - 1).getTfIdc(), 0);
         int stopWordSize = tfidcList.stream().filter(e -> e.getTfIdc() == 0d).collect(Collectors.toList()).size();
-        Assert.assertEquals(5, stopWordSize);
+        Assert.assertEquals(6, stopWordSize);
     }
 
     @Test
@@ -54,8 +54,7 @@ public class TFIDFIT {
 
         document1.addText("a cat is sitting on your face")
                 .close();
-
-        document2.addText("a dog is sitting on your bed")
+        document2.addText("a sitting bull is on your side")
                 .close();
 
         List<TF> tfList = document2.getTF(50); // Retrieves the 50 most common words with stop word list
@@ -65,6 +64,6 @@ public class TFIDFIT {
 
         Assert.assertEquals(0d, tfidcList.get(tfidcList.size() - 1).getTfIdc(), 0);
         int valueWordSize = tfidcList.stream().filter(e -> e.getTfIdc() != 0d).collect(Collectors.toList()).size();
-        Assert.assertEquals(2, valueWordSize);
+        Assert.assertEquals(12, valueWordSize);
     }
 }

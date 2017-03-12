@@ -7,11 +7,11 @@ import java.util.Map;
 /**
  * Created by Olav Holten on 2017-02-03
  */
-public abstract class StopWords {
+public abstract class StopWordList {
 
     private Map<String, String> sortedWords = new HashMap<>();
 
-    public StopWords(){
+    public StopWordList(){
         getWordList().forEach(w ->sortedWords.put(w, w));
     }
 

@@ -2,6 +2,7 @@ package se.imagick.ta.filter;
 
 import org.junit.Assert;
 import org.junit.Test;
+import se.imagick.ta.tfidc.Term;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -44,20 +45,20 @@ public class TextUtilsTest {
     @Test
     public void testGetAllTerms() {
         String text = "This is a sentence";
-        List<List<String>> termList = TextUtils.getAllTerms(text, 3);
+        List<Term> termList = TextUtils.getAllTerms(text, 3);
         Assert.assertEquals(9, termList.size());
 
-        Assert.assertEquals(1, termList.get(0).size());
-        Assert.assertEquals(1, termList.get(1).size());
-        Assert.assertEquals(1, termList.get(2).size());
-        Assert.assertEquals(1, termList.get(3).size());
+        Assert.assertEquals("this", termList.get(0).getJoinedTerm());
+        Assert.assertEquals("is", termList.get(1).toString());
+        Assert.assertEquals("a", termList.get(2).toString());
+        Assert.assertEquals("sentence", termList.get(3).toString());
 
-        Assert.assertEquals(2, termList.get(4).size());
-        Assert.assertEquals(2, termList.get(5).size());
-        Assert.assertEquals(2, termList.get(6).size());
+        Assert.assertEquals("this is", termList.get(4).toString());
+        Assert.assertEquals("is a", termList.get(5).toString());
+        Assert.assertEquals("a sentence", termList.get(6).toString());
 
-        Assert.assertEquals(3, termList.get(7).size());
-        Assert.assertEquals(3, termList.get(8).size());
+        Assert.assertEquals("this is a", termList.get(7).toString());
+        Assert.assertEquals("is a sentence", termList.get(8).toString());
     }
 
     @Test
@@ -65,5 +66,19 @@ public class TextUtilsTest {
         String text = "This is a sentence";
         List<String> termList = TextUtils.getAllTermsAsConcatStrings(text, 3);
         Assert.assertEquals(9, termList.size());
+
+        Assert.assertEquals("this", termList.get(0));
+        Assert.assertEquals("is", termList.get(1));
+        Assert.assertEquals("a", termList.get(2));
+        Assert.assertEquals("sentence", termList.get(3));
+
+        Assert.assertEquals("this is", termList.get(4));
+        Assert.assertEquals("is a", termList.get(5));
+        Assert.assertEquals("a sentence", termList.get(6));
+
+        Assert.assertEquals("this is a", termList.get(7));
+        Assert.assertEquals("is a sentence", termList.get(8));
     }
+
+
 }

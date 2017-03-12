@@ -5,17 +5,17 @@ package se.imagick.ta.tfidc;
  */
 public class TF {
 
-    private String term;
+    private Term term;
     private Document document;
     private double noOfOccurenciesOfTerm;
 
-    public TF(String term, Document document){
+    public TF(Term term, Document document){
         this.term = term;
         this.document = document;
         this.noOfOccurenciesOfTerm = 1;
     }
 
-    public String getTerm() {
+    public Term getTerm() {
         return term;
     }
 

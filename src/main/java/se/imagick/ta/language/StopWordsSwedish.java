@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by Olav Holten on 2017-02-03
  */
-public class StopWordsSwedish extends StopWords {
+public class StopWordsSwedish extends StopWordList {
 
     private static final List<String> SWEDISH_STOP_WORDS = Arrays.asList("aldrig", "all", "alla", "allt", "andra", "andre", "att", "av", "bara", "blev", "bli",
             "blir", "de", "dem", "den", "denna", "dessa", "det", "detta", "dig", "dom", "du", "där", "då", "efter", "ej", "eller", "en", "er", "ett", "fem",

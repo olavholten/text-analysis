@@ -5,15 +5,15 @@ package se.imagick.ta.tfidc;
  */
 public class TFIDC {
 
-    private String term;
+    private Term term;
     private double tfIdc;
 
-    public TFIDC(String term, double frequency, double noOfDocsWithTerm, double totNoOfDocs) {
+    public TFIDC(Term term, double frequency, double noOfDocsWithTerm, double totNoOfDocs) {
         this.term = term;
         this.tfIdc = frequency * Math.log(totNoOfDocs / noOfDocsWithTerm);
     }
 
-    public String getTerm() {
+    public Term getTerm() {
         return term;
     }
 

@@ -1,7 +1,7 @@
 package se.imagick.ta.tfidc;
 
 import se.imagick.ta.filter.ParseType;
-import se.imagick.ta.language.StopWords;
+import se.imagick.ta.language.StopWordList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,9 +15,9 @@ public class Library {
 
     private final int maxNoOfWordsInTerms;
     private final ParseType parseType;
-    private final List<StopWords> stopWordListCollection = new ArrayList<>();
+    private final List<StopWordList> stopWordListCollection = new ArrayList<>();
     private final List<Document> documentList = new ArrayList<>(1024); // Memory is cheap, cores are expensive.
-    private final Map<String, DocumentHolder> wordList = new HashMap<>();
+    private final Map<Term, DocumentHolder> termMap = new HashMap<>();
 
     public Library(ParseType parseType) {
         this(1, parseType);
@@ -28,7 +28,7 @@ public class Library {
         this.parseType = parseType;
     }
 
-    public void addStopWordList(StopWords stopWords) {
+    public void addStopWordList(StopWordList stopWords) {
         stopWordListCollection.add(stopWords);
     }
 
@@ -40,17 +40,17 @@ public class Library {
     }
 
 
-    public String addTerm(String term, Document document) {
+    public Term addTerm(Term term, Document document) {
         // Returns the same String instance, saving memory.
-        return wordList.computeIfAbsent(term, DocumentHolder::new).add(document).term;
+        return termMap.computeIfAbsent(term, DocumentHolder::new).add(document).term;
     }
 
 
     private class DocumentHolder {
-        String term;
+        Term term;
         List<Document> documentList = new ArrayList<>();
 
-        public DocumentHolder(String term) {
+        public DocumentHolder(Term term) {
             this.term = term;
         }
 
@@ -64,7 +64,7 @@ public class Library {
         return documentList.size();
     }
 
-    double getNoOfDocumentsWithTerm(String term) {
-        return wordList.get(term).documentList.size();
+    double getNoOfDocumentsWithTerm(Term term) {
+        return termMap.get(term).documentList.size();
     }
 }

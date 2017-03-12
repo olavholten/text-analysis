@@ -1,8 +1,11 @@
 package se.imagick.ta.language;
 
+import se.imagick.ta.filter.TextUtils;
 import se.imagick.ta.misc.Decomposer;
+import se.imagick.ta.tfidc.Term;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Detects a document language by filtering it with several stop word lists.
@@ -13,15 +16,19 @@ import java.util.List;
  */
 public class LanguageDetector {
 
-    public static String detect(String document, StopWords... stopWordsList) {
+    public static String detect(String document, StopWordList... stopWordsList) {
 
-        List<String> words = Decomposer.scentenceToTerms(document);
+        IntStream chars = document.codePoints();
+        StringBuilder documentSb = new StringBuilder();
+        chars.filter(TextUtils::isAlphaOrSpace).forEach(e -> documentSb.append(Character.toChars(e)));
+
+        List<Term> termList = TextUtils.getAllTerms(documentSb.toString(), 1);
         String reccordLanguage = "Not detected";
         double reccord = 0;
 
-        for(StopWords stopWords : stopWordsList) {
+        for(StopWordList stopWords : stopWordsList) {
 
-            double noOfStopWordsInText = (double) words.stream().filter(stopWords::isStopWord).count();
+            double noOfStopWordsInText = (double) termList.stream().filter(term -> stopWords.isStopWord(term.getJoinedTerm())).count();
 
             if (noOfStopWordsInText > reccord) {
                 reccord = noOfStopWordsInText;
@@ -31,5 +38,4 @@ public class LanguageDetector {
 
         return reccordLanguage;
     }
-
 }

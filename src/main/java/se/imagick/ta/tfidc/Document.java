@@ -1,5 +1,6 @@
 package se.imagick.ta.tfidc;
 
+import se.imagick.ta.filter.TextUtils;
 import se.imagick.ta.misc.Decomposer;
 
 import java.util.*;
@@ -15,7 +16,7 @@ public class Document {
     private String headline;
     private StringBuilder content = new StringBuilder();
     private Library library;
-    private Map<String, TF> termFrequencies = new HashMap<>(2048);
+    private Map<Term, TF> termFrequencies = new HashMap<>(2048);
     private double totalTermCount;
     private boolean isClosed;
 
@@ -54,12 +55,10 @@ public class Document {
     private void decomposeAndAddTerms(String content) {
 
         if (content != null) {
-            List<String> sentenceList = Decomposer.documentToSentences(content);
-            List<String> termList = sentenceList.stream()
-                    .map(String::trim)
+            List<Term> termList = TextUtils.devideSentences(content).stream()
                     .filter(e -> !e.isEmpty())
-                    .map(Decomposer::scentenceToTerms)
-                    .flatMap(Collection::stream)
+                    .map(str -> TextUtils.getAllTerms(str, 3))
+                    .flatMap(List::stream)
                     .collect(Collectors.toList());
 
             termList.forEach(this::addTerm);
@@ -97,7 +96,7 @@ public class Document {
         return totalTermCount;
     }
 
-    private void addTerm(String term) {
+    private void addTerm(Term term) {
 
         totalTermCount++;
         TF tf = termFrequencies.get(term);
