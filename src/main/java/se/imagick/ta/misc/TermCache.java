@@ -3,7 +3,6 @@ package se.imagick.ta.misc;
 import se.imagick.ta.tfidc.Term;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,6 +16,7 @@ public class TermCache {
 
     /**
      * Puts a term into the cache. If not present it will create a new Term instance using cached words.
+     *
      * @return A cached term.
      */
     public Term put(Term term) {

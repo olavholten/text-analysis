@@ -34,12 +34,12 @@ public class TFIDFIT {
                 .close();
 
         List<TF> tfList = document2.getTF(50); // Retrieves the 50 most common words with stop word list
-        List<TFIDC> tfidcList = document1.getTFIDC(50); // Retrieves the words with the 50 highest TF-IDC scores.
+        List<TFIDF> TFIDFList = document1.getTFIDC(50); // Retrieves the words with the 50 highest TF-IDC scores.
 
-        tfidcList.forEach(System.out::println);
+        TFIDFList.forEach(System.out::println);
 
-        Assert.assertEquals(0d, tfidcList.get(tfidcList.size() - 1).getTfIdc(), 0);
-        int stopWordSize = tfidcList.stream().filter(e -> e.getTfIdc() == 0d).collect(Collectors.toList()).size();
+        Assert.assertEquals(0d, TFIDFList.get(TFIDFList.size() - 1).getTfIdc(), 0);
+        int stopWordSize = TFIDFList.stream().filter(e -> e.getTfIdc() == 0d).collect(Collectors.toList()).size();
         Assert.assertEquals(6, stopWordSize);
     }
 
@@ -58,12 +58,12 @@ public class TFIDFIT {
                 .close();
 
         List<TF> tfList = document2.getTF(50); // Retrieves the 50 most common words with stop word list
-        List<TFIDC> tfidcList = document1.getTFIDC(50); // Retrieves the words with the 50 highest TF-IDC scores.
+        List<TFIDF> TFIDFList = document1.getTFIDC(50); // Retrieves the words with the 50 highest TF-IDC scores.
 
-        tfidcList.forEach(System.out::println);
+        TFIDFList.forEach(System.out::println);
 
-        Assert.assertEquals(0d, tfidcList.get(tfidcList.size() - 1).getTfIdc(), 0);
-        int valueWordSize = tfidcList.stream().filter(e -> e.getTfIdc() != 0d).collect(Collectors.toList()).size();
+        Assert.assertEquals(0d, TFIDFList.get(TFIDFList.size() - 1).getTfIdc(), 0);
+        int valueWordSize = TFIDFList.stream().filter(e -> e.getTfIdc() != 0d).collect(Collectors.toList()).size();
         Assert.assertEquals(12, valueWordSize);
     }
 }

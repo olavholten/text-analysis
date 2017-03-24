@@ -41,21 +41,38 @@ public class Library {
 
 
     public Term addTerm(Term term, Document document) {
-        // Returns the same String instance, saving memory.
-        return termMap.computeIfAbsent(term, DocumentHolder::new).add(document).term;
+        // Returns the same Term instance, saving memory.
+        return termMap.computeIfAbsent(term, DocumentHolder::new).add(document).getTerm();
     }
 
 
     private class DocumentHolder {
-        Term term;
-        List<Document> documentList = new ArrayList<>();
+        private Term term;
+        private List<Document> documentList = new ArrayList<>();
 
-        public DocumentHolder(Term term) {
+        DocumentHolder(Term term) {
             this.term = term;
         }
 
-        public DocumentHolder add(Document document) {
+        DocumentHolder add(Document document) {
             documentList.add(document);
+            return this;
+        }
+
+        public Term getTerm() {
+            return term;
+        }
+
+        public void setTerm(Term term) {
+            this.term = term;
+        }
+
+        public List<Document> getDocumentList() {
+            return documentList;
+        }
+
+        public DocumentHolder setDocumentList(List<Document> documentList) {
+            this.documentList = documentList;
             return this;
         }
     }

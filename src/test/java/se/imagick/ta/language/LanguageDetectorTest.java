@@ -2,10 +2,6 @@ package se.imagick.ta.language;
 
 import org.junit.Assert;
 import org.junit.Test;
-import se.imagick.ta.language.LanguageDetector;
-import se.imagick.ta.language.StopWordsEnglish;
-import se.imagick.ta.language.StopWordsSpanish;
-import se.imagick.ta.language.StopWordsSwedish;
 
 /**
  * Created by Olav Holten on 2017-02-05

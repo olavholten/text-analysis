@@ -1,11 +1,11 @@
 package se.imagick.ta.tfidc;
 
 import se.imagick.ta.filter.TextUtils;
-import se.imagick.ta.misc.Decomposer;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by Olav Holten on 2017-01-29
@@ -54,7 +54,9 @@ public class Document {
 
     private void decomposeAndAddTerms(String content) {
 
+
         if (content != null) {
+            TextUtils.cleanString(content);
             List<Term> termList = TextUtils.devideSentences(content).stream()
                     .filter(e -> !e.isEmpty())
                     .map(str -> TextUtils.getAllTerms(str, 3))
@@ -75,7 +77,7 @@ public class Document {
         return this.termFrequencies.values().stream().sorted(this::compareTF).limit(maxNoOfTerms).collect(Collectors.toList());
     }
 
-    public List<TFIDC> getTFIDC(int maxNoOfTerms) {
+    public List<TFIDF> getTFIDC(int maxNoOfTerms) {
 
         if (!isClosed) {
             throw new IllegalStateException("The document is not closed!");
@@ -83,8 +85,8 @@ public class Document {
 
         double totNoOfDocs = this.library.getNoOfDocumentsInLibrary();
 
-        List<TFIDC> tfIdcList = termFrequencies.values().stream()
-                .map(tf -> new TFIDC(tf.getTerm(), tf.getFrequency(), this.library.getNoOfDocumentsWithTerm(tf.getTerm()), totNoOfDocs))
+        List<TFIDF> tfIdcList = termFrequencies.values().stream()
+                .map(tf -> new TFIDF(tf.getTerm(), tf.getFrequency(), this.library.getNoOfDocumentsWithTerm(tf.getTerm()), totNoOfDocs))
                 .sorted(this::compareTFIDC)
                 .limit(maxNoOfTerms)
                 .collect(Collectors.toList());
@@ -99,14 +101,13 @@ public class Document {
     private void addTerm(Term term) {
 
         totalTermCount++;
-        TF tf = termFrequencies.get(term);
+        TF tf = termFrequencies.computeIfAbsent(term, this::createTermFrequency);
+        tf.increaseTermOccurencyByOne();
+    }
 
-        if (tf == null) {
-            term = library.addTerm(term, this); // Term String instance reuse.
-            termFrequencies.put(term, new TF(term, this));
-        } else {
-            tf.increaseTermOccurencyByOne();
-        }
+    private TF createTermFrequency(Term term) {
+        term = library.addTerm(term, this); // Term String instance reuse.
+        return new TF(term, this);
     }
 
     private int compareTF(TF tf1, TF tf2) {
@@ -114,8 +115,8 @@ public class Document {
         return (delta < 0 ? -1 : (delta == 0) ? 0 : 1);
     }
 
-    private int compareTFIDC(TFIDC tfidc1, TFIDC tfidc2) {
-        double delta = tfidc2.getTfIdc() - tfidc1.getTfIdc();
+    private int compareTFIDC(TFIDF TFIDF1, TFIDF TFIDF2) {
+        double delta = TFIDF2.getTfIdc() - TFIDF1.getTfIdc();
         return (delta < 0 ? -1 : (delta == 0) ? 0 : 1);
     }
 }

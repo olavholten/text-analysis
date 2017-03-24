@@ -3,12 +3,12 @@ package se.imagick.ta.tfidc;
 /**
  * Created by john on 2017-02-03
  */
-public class TFIDC {
+public class TFIDF {
 
     private Term term;
     private double tfIdc;
 
-    public TFIDC(Term term, double frequency, double noOfDocsWithTerm, double totNoOfDocs) {
+    public TFIDF(Term term, double frequency, double noOfDocsWithTerm, double totNoOfDocs) {
         this.term = term;
         this.tfIdc = frequency * Math.log(totNoOfDocs / noOfDocsWithTerm);
     }

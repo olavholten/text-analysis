@@ -1,7 +1,6 @@
 package se.imagick.ta.language;
 
 import se.imagick.ta.filter.TextUtils;
-import se.imagick.ta.misc.Decomposer;
 import se.imagick.ta.tfidc.Term;
 
 import java.util.List;

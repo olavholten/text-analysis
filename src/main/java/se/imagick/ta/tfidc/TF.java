@@ -9,10 +9,10 @@ public class TF {
     private Document document;
     private double noOfOccurenciesOfTerm;
 
-    public TF(Term term, Document document){
+    public TF(Term term, Document document) {
         this.term = term;
         this.document = document;
-        this.noOfOccurenciesOfTerm = 1;
+        this.noOfOccurenciesOfTerm = 0;
     }
 
     public Term getTerm() {

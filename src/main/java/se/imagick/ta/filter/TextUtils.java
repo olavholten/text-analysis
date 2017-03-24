@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by Olav Holten on 2016-12-10
@@ -125,5 +126,14 @@ public class TextUtils {
         StringJoiner sj = new StringJoiner(" ");
         wordList.forEach(sj::add);
         return sj.toString();
+    }
+
+    public static String cleanString(String content) {
+
+        IntStream chars = content.codePoints();
+        StringBuilder sb = new StringBuilder();
+        chars.filter(TextUtils::isAlphaOrSpaceOrSentenceDivider).forEach(e -> sb.append(Character.toChars(e)));
+
+        return sb.toString();
     }
 }

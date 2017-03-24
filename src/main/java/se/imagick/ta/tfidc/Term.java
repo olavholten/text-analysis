@@ -17,7 +17,7 @@ public class Term {
     public Term(List<String> wordList) {
         this.wordList = wordList;
         this.joinedTerm = TextUtils.join(this.wordList);
-        this.hashCode = this.wordList.hashCode();
+        this.hashCode = this.joinedTerm.hashCode();
     }
 
     public String getJoinedTerm() {

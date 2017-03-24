@@ -1,9 +1,5 @@
 package se.imagick.ta.misc;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * Created by Olav Holten on 2017-02-04
  */
