@@ -1,6 +1,7 @@
 package se.imagick.ta.tfidc;
 
 import se.imagick.ta.filter.TextUtils;
+import se.imagick.ta.misc.TermCache;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,14 +15,16 @@ public class Document {
 
     private String name;
     private String headline;
-    private StringBuilder content = new StringBuilder();
-    private Library library;
-    private Map<Term, TF> termFrequencies = new HashMap<>(2048);
+    private final StringBuilder content = new StringBuilder();
+    private final Library library;
+    private final TermCache termCache;
+    private final Map<Term, TF> termFrequencies = new HashMap<>(2048);
     private double totalTermCount;
     private boolean isClosed;
 
     public Document(Library library) {
         this.library = library;
+        this.termCache = this.library.getTermCache();
     }
 
     public Document setName(String name) {
@@ -54,19 +57,21 @@ public class Document {
 
     private void decomposeAndAddTerms(String content) {
 
-
         if (content != null) {
-            TextUtils.cleanString(content);
-            List<Term> termList = TextUtils.devideSentences(content).stream()
+            String cleanContent = TextUtils.cleanString(content);
+            List<Term> termList = TextUtils.devideSentences(cleanContent).stream()
                     .filter(e -> !e.isEmpty())
-                    .map(str -> TextUtils.getAllTerms(str, 3))
+                    .map(str -> TextUtils.getAllTerms(str, 3, library.getStopWordLists(), library.getParseType()))
                     .flatMap(List::stream)
+                    .map(termCache::getCached) // Releases memory to GC.
                     .collect(Collectors.toList());
 
             termList.forEach(this::addTerm);
         }
 
     }
+
+
 
     public List<TF> getTF(int maxNoOfTerms) {
 

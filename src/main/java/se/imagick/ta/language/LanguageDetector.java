@@ -1,8 +1,10 @@
 package se.imagick.ta.language;
 
+import se.imagick.ta.filter.ParseType;
 import se.imagick.ta.filter.TextUtils;
 import se.imagick.ta.tfidc.Term;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -15,17 +17,17 @@ import java.util.stream.IntStream;
  */
 public class LanguageDetector {
 
-    public static String detect(String document, StopWordList... stopWordsList) {
+    public static String detect(String document, StopWordList... stopWordsListCollection) {
 
         IntStream chars = document.codePoints();
         StringBuilder documentSb = new StringBuilder();
         chars.filter(TextUtils::isAlphaOrSpace).forEach(e -> documentSb.append(Character.toChars(e)));
 
-        List<Term> termList = TextUtils.getAllTerms(documentSb.toString(), 1);
+        List<Term> termList = TextUtils.getAllTerms(documentSb.toString(), 1, new ArrayList<>(), null);
         String reccordLanguage = "Not detected";
         double reccord = 0;
 
-        for(StopWordList stopWords : stopWordsList) {
+        for(StopWordList stopWords : stopWordsListCollection) {
 
             double noOfStopWordsInText = (double) termList.stream().filter(term -> stopWords.isStopWord(term.getJoinedTerm())).count();
 

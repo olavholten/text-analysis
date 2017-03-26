@@ -67,7 +67,7 @@ public class StopWordGenerator {
                 sortEntry = new WordSortEntry();
                 sortEntry.noof = 0L;
                 sortEntry.word = word;
-                wordMap.put(word, sortEntry);
+                wordMap.getCached(word, sortEntry);
             }
 
             sortEntry.noof++;

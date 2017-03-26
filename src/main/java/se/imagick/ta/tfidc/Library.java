@@ -2,6 +2,7 @@ package se.imagick.ta.tfidc;
 
 import se.imagick.ta.filter.ParseType;
 import se.imagick.ta.language.StopWordList;
+import se.imagick.ta.misc.TermCache;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ public class Library {
     private final List<StopWordList> stopWordListCollection = new ArrayList<>();
     private final List<Document> documentList = new ArrayList<>(1024); // Memory is cheap, cores are expensive.
     private final Map<Term, DocumentHolder> termMap = new HashMap<>();
+    private final TermCache termCache = new TermCache();
 
     public Library(ParseType parseType) {
         this(1, parseType);
@@ -43,6 +45,10 @@ public class Library {
     public Term addTerm(Term term, Document document) {
         // Returns the same Term instance, saving memory.
         return termMap.computeIfAbsent(term, DocumentHolder::new).add(document).getTerm();
+    }
+
+    public List<StopWordList> getStopWordLists() {
+        return this.stopWordListCollection;
     }
 
 
@@ -83,5 +89,13 @@ public class Library {
 
     double getNoOfDocumentsWithTerm(Term term) {
         return termMap.get(term).documentList.size();
+    }
+
+    TermCache getTermCache() {
+        return termCache;
+    }
+
+    public ParseType getParseType() {
+        return parseType;
     }
 }

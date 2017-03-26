@@ -42,7 +42,9 @@ public class EncodingCorrectReaderTest {
             document.close();
         }
 
-        List<TFIDF> tfidcList = document.getTFIDC(100);
+        List<TFIDF> tfidcList = document.getTFIDC(10000);
+
+//        tfidcList.removeIf(e -> e.getTerm().getNoOfWords() < 3);
 
         tfidcList.forEach(System.out::println);
     }

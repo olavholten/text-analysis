@@ -11,12 +11,12 @@ import java.util.List;
  */
 public class Term {
     private String joinedTerm;
-    private List<String> wordList;
-    private Integer hashCode;
+    private int noOfWords;
+    private int hashCode;
 
     public Term(List<String> wordList) {
-        this.wordList = wordList;
-        this.joinedTerm = TextUtils.join(this.wordList);
+        this.joinedTerm = TextUtils.join(wordList);
+        this.noOfWords = wordList.size();
         this.hashCode = this.joinedTerm.hashCode();
     }
 
@@ -24,12 +24,12 @@ public class Term {
         return joinedTerm;
     }
 
-    public List<String> getWordList() {
-        return wordList;
+    public int getNoOfWords() {
+        return noOfWords;
     }
 
     public boolean equals(Object o) {
-        return o instanceof Term && this.hashCode() == o.hashCode();
+        return o instanceof Term && this.hashCode == o.hashCode();
     }
 
     public int hashCode() {

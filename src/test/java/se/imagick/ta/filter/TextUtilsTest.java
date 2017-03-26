@@ -45,7 +45,7 @@ public class TextUtilsTest {
     @Test
     public void testGetAllTerms() {
         String text = "This is a sentence";
-        List<Term> termList = TextUtils.getAllTerms(text, 3);
+        List<Term> termList = TextUtils.getAllTerms(text, 3, null, null);
         Assert.assertEquals(9, termList.size());
 
         Assert.assertEquals("this", termList.get(0).getJoinedTerm());
@@ -64,7 +64,7 @@ public class TextUtilsTest {
     @Test
     public void getAllTermsAsConcatStrings() {
         String text = "This is a sentence";
-        List<String> termList = TextUtils.getAllTermsAsConcatStrings(text, 3);
+        List<String> termList = TextUtils.getAllTermsAsConcatStrings(text, 3, null);
         Assert.assertEquals(9, termList.size());
 
         Assert.assertEquals("this", termList.get(0));
@@ -78,6 +78,17 @@ public class TextUtilsTest {
 
         Assert.assertEquals("this is a", termList.get(7));
         Assert.assertEquals("is a sentence", termList.get(8));
+    }
+
+    @Test
+    public void detectsSpecialDeviders() {
+        String content = "This(is)a very odd[sentence]to test.";
+        StringBuilder sb = new StringBuilder();
+        content.codePoints()
+                .map(c -> (TextUtils.isSpecialDevider(c))?' ':c)
+                .forEach(e -> sb.append(Character.toChars(e)));
+
+        Assert.assertEquals("This is a very odd sentence to test.", sb.toString());
     }
 
 

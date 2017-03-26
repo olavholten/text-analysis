@@ -1,5 +1,6 @@
 package se.imagick.ta.filter;
 
+import se.imagick.ta.language.StopWordList;
 import se.imagick.ta.tfidc.Term;
 
 import java.util.ArrayList;
@@ -7,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Created by Olav Holten on 2016-12-10
@@ -67,6 +67,7 @@ public class TextUtils {
 
     /**
      * Devides a sentence into words. All sentence dividers must be taken away before calling this method.
+     *
      * @param sentence The sentence to be divided
      * @return A List of strings in order of appearance in the sentence.
      */
@@ -81,40 +82,79 @@ public class TextUtils {
 
     /**
      * Retrieves all terms in a sentence as a list of a list of words.
-     * @param sentence The sentence for which to retrieve the terms.
-     * @param maxNoOfWordsInTerm The max number of words in a term. Eg 3 will retrieve words, be-grams and tri-grams.
+     *
+     * @param sentence               The sentence for which to retrieve the terms.
+     * @param maxNoOfWordsInTerm     The max number of words in a term. Eg 3 will retrieve words, be-grams and tri-grams.
+     * @param stopWordListCollection Stop word lists.
+     * @param parseType
      * @return A list of list of words building up the terms found (including duplicates).
      */
-    public static List<Term> getAllTerms(String sentence, int maxNoOfWordsInTerm) {
+    public static List<Term> getAllTerms(String sentence, int maxNoOfWordsInTerm, List<StopWordList> stopWordListCollection, ParseType parseType) {
 
         List<String> wordList = devideSentenceIntoWords(sentence);
         int size = wordList.size();
         List<Term> termList = new ArrayList<>();
 
-        for(int noOfWords = 1; noOfWords <= maxNoOfWordsInTerm; noOfWords++) {
-            for(int termNo = 0; termNo + noOfWords <= size; termNo++ ) {
+        for (int noOfWords = 1; noOfWords <= maxNoOfWordsInTerm; noOfWords++) {
+            for (int termNo = 0; termNo + noOfWords <= size; termNo++) {
                 List<String> termWordList = new ArrayList<>();
-                for(int wordNo = termNo; wordNo < termNo + noOfWords; wordNo++) {
+                for (int wordNo = termNo; wordNo < termNo + noOfWords; wordNo++) {
                     String word = wordList.get(wordNo);
                     termWordList.add(word);
                 }
-                termList.add(new Term(termWordList));
+
+                stripStopWordsFromTerm(termWordList, stopWordListCollection, parseType);
+
+                if (!termWordList.isEmpty()) {
+                    termList.add(new Term(termWordList));
+                }
             }
         }
 
         return termList;
     }
 
+    public static void stripStopWordsFromTerm(List<String> termWordList, List<StopWordList> stopWordListCollection, ParseType parseType) {
+        if (stopWordListCollection != null) {
+
+            if (parseType == ParseType.REMOVE_ALL_STOP_WORDS) {
+                for (StopWordList stopWordList : stopWordListCollection) {
+                    termWordList.removeIf(stopWordList::isStopWord);
+                }
+            }
+
+            if(parseType == ParseType.REMOVE_TERMS_WITH_ONLY_STOP_WORDS) {
+
+                boolean isOnlyStopWords = false;
+                for (StopWordList stopWordList : stopWordListCollection) {
+                    int noOfStopWords = 0;
+
+                    for(String word : termWordList) {
+                        if(stopWordList.isStopWord(word))
+                        noOfStopWords++;
+                    }
+
+                    isOnlyStopWords = (noOfStopWords == termWordList.size()) || isOnlyStopWords;
+                }
+
+                if(isOnlyStopWords) {
+                    termWordList.clear();
+                }
+            }
+        }
+    }
+
     /**
      * Retrieves all terms in a sentence as a list of a list of words.
-     * @param sentence The sentence for which to retrieve the terms.
+     *
+     * @param sentence           The sentence for which to retrieve the terms.
      * @param maxNoOfWordsInTerm The max number of words in a term. Eg 3 will retrieve words, be-grams and tri-grams.
      * @return A list of list of words building up the terms found (including duplicates).
      */
-    public static List<String> getAllTermsAsConcatStrings(String sentence, int maxNoOfWordsInTerm) {
+    public static List<String> getAllTermsAsConcatStrings(String sentence, int maxNoOfWordsInTerm, List<StopWordList> stopWordListCollection) {
 
 
-        List<Term> allTerms = getAllTerms(sentence, maxNoOfWordsInTerm);
+        List<Term> allTerms = getAllTerms(sentence, maxNoOfWordsInTerm, stopWordListCollection, null);
 
         List<String> termList = new ArrayList<>();
         allTerms.forEach(term -> termList.add(term.getJoinedTerm()));
@@ -125,15 +165,25 @@ public class TextUtils {
     public static String join(List<String> wordList) {
         StringJoiner sj = new StringJoiner(" ");
         wordList.forEach(sj::add);
-        return sj.toString();
+        return sj.toString().trim();
     }
 
     public static String cleanString(String content) {
 
-        IntStream chars = content.codePoints();
         StringBuilder sb = new StringBuilder();
-        chars.filter(TextUtils::isAlphaOrSpaceOrSentenceDivider).forEach(e -> sb.append(Character.toChars(e)));
+        content.codePoints()
+                .map(c -> (isSpecialDevider(c)) ? ' ' : c)
+                .filter(TextUtils::isAlphaOrSpaceOrSentenceDivider)
+                .forEach(e -> sb.append(Character.toChars(e)));
 
         return sb.toString();
+    }
+
+    public static boolean isSpecialDevider(int c) {
+        return c == '('
+                || c == ')'
+                || c == '['
+                || c == ']'
+                || c == '&';
     }
 }
