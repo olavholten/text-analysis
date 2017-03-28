@@ -1,11 +1,14 @@
 package se.imagick.ta.tfidc;
 
+import se.imagick.ta.filter.EncodingCorrectReader;
 import se.imagick.ta.filter.TextUtils;
 import se.imagick.ta.misc.TermCache;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +40,11 @@ public class Document {
         return this;
     }
 
+    /**
+     * Appends text to this document. Repeat until done.
+     * @param text The text to be append.
+     * @return this document, for flowing api.
+     */
     public Document addText(String text) {
 
         if (isClosed) {
@@ -45,6 +53,25 @@ public class Document {
 
         content.append(text);
         return this;
+    }
+
+    public Document addText(InputStream inputStream) throws IOException {
+
+        Optional<Reader> reader = EncodingCorrectReader.getReader(inputStream);
+        BufferedReader bufferedReader = new BufferedReader(reader.orElse(null));
+        StringBuilder sb = new StringBuilder();
+        String line;
+
+        while ((line = bufferedReader.readLine()) != null) {
+            sb.append(line);
+        }
+        ;
+
+        return addText(sb.toString());
+    }
+
+    public Document addText(File file) throws IOException {
+        return addText(new FileInputStream(file));
     }
 
     public void close() {
@@ -70,7 +97,6 @@ public class Document {
         }
 
     }
-
 
 
     public List<TF> getTF(int maxNoOfTerms) {

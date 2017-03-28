@@ -23,22 +23,11 @@ public class EncodingCorrectReaderTest {
 
         Library library = new Library(ParseType.REMOVE_TERMS_WITH_ONLY_STOP_WORDS);
         library.addStopWordList(new StopWordsSwedish());
-        File[] books = new File("src/main/resources/books/se").listFiles();
         Document document = null;
 
-        for (File book : books) {
-            Optional<Reader> reader = getReader(new FileInputStream(book));
-            BufferedReader bufferedReader = new BufferedReader(reader.orElse(null));
-
-            StringBuilder sb = new StringBuilder();
-            String line;
-
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            };
-
+        for (File bookFile : new File("src/main/resources/books/se").listFiles()) {
             document = library.addAndGetNewDocument();
-            document.addText(sb.toString());
+            document.addText(bookFile);
             document.close();
         }
 
