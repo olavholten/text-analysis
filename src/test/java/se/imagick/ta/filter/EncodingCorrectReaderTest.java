@@ -7,9 +7,7 @@ import se.imagick.ta.tfidc.TFIDF;
 
 import java.io.*;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.Assert.*;
 import static se.imagick.ta.filter.EncodingCorrectReader.getReader;
 
 /**
@@ -27,7 +25,7 @@ public class EncodingCorrectReaderTest {
 
         for (File bookFile : new File("src/main/resources/books/se").listFiles()) {
             document = library.addAndGetNewDocument();
-            document.addText(bookFile);
+            document.setText(bookFile);
             document.close();
         }
 

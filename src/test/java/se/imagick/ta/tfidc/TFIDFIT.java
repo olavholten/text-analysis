@@ -25,12 +25,12 @@ public class TFIDFIT {
 
         document1.setName("All chars")
                 .setHeadline("All the chars in the alphabet is in this document")
-                .addText("The lazy dog ")
-                .addText("jumps over the quick brown fox. The end!")
+                .setText("The lazy dog ")
+                .setText("jumps over the quick brown fox. The end!")
                 .close();
 
-        document2.addText("Why does this document have neither name nor hedline? Because ")
-                .addText("it's test data, and such does not have to have that at all! That is the truth")
+        document2.setText("Why does this document have neither name nor hedline? Because ")
+                .setText("it's test data, and such does not have to have that at all! That is the truth")
                 .close();
 
         List<TF> tfList = document2.getTF(50); // Retrieves the 50 most common words with stop word list
@@ -52,9 +52,9 @@ public class TFIDFIT {
         Document document1 = library.addAndGetNewDocument();
         Document document2 = library.addAndGetNewDocument();
 
-        document1.addText("a cat is sitting on your face")
+        document1.setText("a cat is sitting on your face")
                 .close();
-        document2.addText("a sitting bull is on your side")
+        document2.setText("a sitting bull is on your side")
                 .close();
 
         List<TF> tfList = document2.getTF(50); // Retrieves the 50 most common words with stop word list

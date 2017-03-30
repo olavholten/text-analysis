@@ -8,10 +8,12 @@ public class TF {
     private Term term;
     private Document document;
     private double noOfOccurenciesOfTerm;
+    private Double frequency;
 
     public TF(Term term, Document document) {
         this.term = term;
         this.document = document;
+        this.frequency = null;
         this.noOfOccurenciesOfTerm = 0;
     }
 
@@ -20,11 +22,14 @@ public class TF {
     }
 
     public double getFrequency() {
-        return noOfOccurenciesOfTerm / document.getTotalTermCount();
+        // This method is used for sorting, so prevention of multiple calculations is needed.
+        frequency =  (frequency == null)?noOfOccurenciesOfTerm / document.getTotalTermCount():frequency;
+        return frequency;
     }
 
     public void increaseTermOccurencyByOne() {
         this.noOfOccurenciesOfTerm++;
+        this.frequency = null;
     }
 
     public String toString() {

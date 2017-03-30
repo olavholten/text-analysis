@@ -30,11 +30,21 @@ public class Document {
         this.termCache = this.library.getTermCache();
     }
 
+    /**
+     * Adds a name to this document (EG file name, URL, book title etc).
+     * @param name The name.
+     * @return This document.
+     */
     public Document setName(String name) {
         this.name = name;
         return this;
     }
 
+    /**
+     * Adds a headline to the document.
+     * @param headline The headline to be added.
+     * @return This document.
+     */
     public Document setHeadline(String headline) {
         this.headline = headline;
         return this;
@@ -42,10 +52,11 @@ public class Document {
 
     /**
      * Appends text to this document. Repeat until done.
+     *
      * @param text The text to be append.
-     * @return this document, for flowing api.
+     * @return this document.
      */
-    public Document addText(String text) {
+    public Document setText(String text) {
 
         if (isClosed) {
             throw new IllegalStateException("The document is closed!");
@@ -55,33 +66,59 @@ public class Document {
         return this;
     }
 
-    public Document addText(InputStream inputStream) throws IOException {
+    /**
+     * Sets the text to the content of the specified text resource (file), and then closes the document for further input.
+     * @param textResource An InputStream containing text.
+     * @return This document.
+     * @throws IOException If the resource could not be read.
+     */
+    public Document setText(InputStream textResource) throws IOException {
 
-        Optional<Reader> reader = EncodingCorrectReader.getReader(inputStream);
+        Optional<Reader> reader = EncodingCorrectReader.getReader(textResource);
         BufferedReader bufferedReader = new BufferedReader(reader.orElse(null));
         StringBuilder sb = new StringBuilder();
         String line;
 
         while ((line = bufferedReader.readLine()) != null) {
             sb.append(line);
+        };
+
+        setText(sb.toString());
+        close();
+        return this;
+    }
+
+    /**
+     * Sets the text to the content of the specified text resource (file), and then closes the document for further input.
+     * @param textResournce A file containing text.
+     * @return This document.
+     * @throws IOException If the resource could not be read.
+     */
+    public Document setText(File textResournce) throws IOException {
+        setText(new FileInputStream(textResournce));
+        close();
+        return this;
+    }
+
+    /**
+     * Closes the document for input and starts processing the text.
+     * @return This document.
+     */
+    public Document close() {
+        if (!isClosed) {
+            isClosed = true;
+            decomposeAndAddTerms(this.name);
+            decomposeAndAddTerms(this.headline);
+            decomposeAndAddTerms(this.content.toString());
         }
-        ;
 
-        return addText(sb.toString());
+        return this;
     }
 
-    public Document addText(File file) throws IOException {
-        return addText(new FileInputStream(file));
-    }
-
-    public void close() {
-        // start processing the text.
-        isClosed = true;
-        decomposeAndAddTerms(this.name);
-        decomposeAndAddTerms(this.headline);
-        decomposeAndAddTerms(this.content.toString());
-    }
-
+    /**
+     * Processes this document after closing.
+     * @param content The content.
+     */
     private void decomposeAndAddTerms(String content) {
 
         if (content != null) {
@@ -95,7 +132,6 @@ public class Document {
 
             termList.forEach(this::addTerm);
         }
-
     }
 
 
