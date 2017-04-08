@@ -13,9 +13,14 @@ import java.util.Optional;
  */
 public class EncodingCorrectReader {
 
-
-    public static Optional<Reader> getReader(String fileName) throws IOException {
-        return getReader(new FileInputStream(fileName));
+    /**
+     * Retrieves a java.io.Reader, using the detected file encoding for the inputStream.
+     * @param filePathAndName The file path and name.
+     * @return A java.io.Reader using the (hopefully) correct file encoding (courtesy of IBM).
+     * @throws IOException If the stream fails.
+     */
+    public static Optional<Reader> getReader(String filePathAndName) throws IOException {
+        return getReader(new FileInputStream(filePathAndName));
     }
 
 
