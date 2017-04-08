@@ -22,7 +22,7 @@ public class EncodingCorrectReader {
     /**
      * Retrieves a java.io.Reader, using the detected file encoding for the inputStream.
      * @param inputStream The content as an java.io.InputStream.
-     * @return A java.io.Reader using the (hopefully) correct file encoding (courtecy of IBM).
+     * @return A java.io.Reader using the (hopefully) correct file encoding (courtesy of IBM).
      * @throws IOException If the stream fails.
      */
     public static Optional<Reader> getReader(InputStream inputStream) throws IOException {
@@ -41,7 +41,7 @@ public class EncodingCorrectReader {
      * Retrieves a com.ibm.icu.text.CharsetMatch, using the detected file encoding for the inputStream.
      * Use if you need to know detected language etc.
      * @param inputStream The content as an java.io.InputStream.
-     * @return A com.ibm.icu.text.CharsetMatch using the (hopefully) correct file encoding (courtecy of IBM).
+     * @return A com.ibm.icu.text.CharsetMatch using the (hopefully) correct file encoding (courtesy of IBM).
      * @throws IOException If the stream fails.
      */
     public static Optional<CharsetMatch> getCharsetMatch(InputStream inputStream) throws IOException {
