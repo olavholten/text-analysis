@@ -183,7 +183,7 @@ public class Document {
     }
 
     private int compareTFIDC(TFIDF TFIDF1, TFIDF TFIDF2) {
-        double delta = TFIDF2.getTfIdc() - TFIDF1.getTfIdc();
+        double delta = TFIDF2.getTfIdf() - TFIDF1.getTfIdf();
         return (delta < 0 ? -1 : (delta == 0) ? 0 : 1);
     }
 }

@@ -5,10 +5,9 @@ import se.imagick.ta.tfidc.Document;
 import se.imagick.ta.tfidc.Library;
 import se.imagick.ta.tfidc.TFIDF;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
-
-import static se.imagick.ta.filter.EncodingCorrectReader.getReader;
 
 /**
  * Created by
@@ -19,20 +18,16 @@ public class EncodingCorrectReaderTest {
 
     public static void main(String[] args) throws IOException {
 
-        Library library = new Library(ParseType.REMOVE_TERMS_WITH_ONLY_STOP_WORDS);
+        Library library = new Library(ParseType.REMOVE_ALL_STOP_WORDS);
         library.addStopWordList(new StopWordsSwedish());
         Document document = null;
 
         for (File bookFile : new File("src/main/resources/books/se").listFiles()) {
-            document = library.addAndGetNewDocument();
-            document.setText(bookFile);
+            document = library.addAndGetNewDocument().setText(bookFile);
             document.close();
         }
 
         List<TFIDF> tfidcList = document.getTFIDC(10000);
-
-//        tfidcList.removeIf(e -> e.getTerm().getNoOfWords() < 3);
-
         tfidcList.forEach(System.out::println);
     }
 }

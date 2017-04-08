@@ -17,11 +17,11 @@ public class TFIDF {
         return term;
     }
 
-    public double getTfIdc() {
+    public double getTfIdf() {
         return tfIdc;
     }
 
     public String toString() {
-        return "Term: " + term + ", tfIdc: " + getTfIdc();
+        return "Term: " + term + ", tfIdc: " + getTfIdf();
     }
 }

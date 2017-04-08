@@ -38,9 +38,9 @@ public class TFIDFIT {
 
         TFIDFList.forEach(System.out::println);
 
-        Assert.assertEquals(0d, TFIDFList.get(TFIDFList.size() - 1).getTfIdc(), 0);
-        int stopWordSize = TFIDFList.stream().filter(e -> e.getTfIdc() == 0d).collect(Collectors.toList()).size();
-        Assert.assertEquals(6, stopWordSize);
+        Assert.assertEquals(0d, TFIDFList.get(TFIDFList.size() - 1).getTfIdf(), 0);
+        int commonWordSize = TFIDFList.stream().filter(e -> e.getTfIdf() == 0d).collect(Collectors.toList()).size();
+        Assert.assertEquals(6, commonWordSize);
     }
 
     @Test
@@ -62,8 +62,8 @@ public class TFIDFIT {
 
         TFIDFList.forEach(System.out::println);
 
-        Assert.assertEquals(0d, TFIDFList.get(TFIDFList.size() - 1).getTfIdc(), 0);
-        int valueWordSize = TFIDFList.stream().filter(e -> e.getTfIdc() != 0d).collect(Collectors.toList()).size();
+        Assert.assertEquals(0d, TFIDFList.get(TFIDFList.size() - 1).getTfIdf(), 0);
+        int valueWordSize = TFIDFList.stream().filter(e -> e.getTfIdf() != 0d).collect(Collectors.toList()).size();
         Assert.assertEquals(12, valueWordSize);
     }
 }

@@ -122,8 +122,7 @@ public class TextUtils {
                     termWordList.removeIf(stopWordList::isStopWord);
                 }
             }
-
-            if(parseType == ParseType.REMOVE_TERMS_WITH_ONLY_STOP_WORDS) {
+            else if(parseType == ParseType.REMOVE_TERMS_WITH_ONLY_STOP_WORDS) {
 
                 boolean isOnlyStopWords = false;
                 for (StopWordList stopWordList : stopWordListCollection) {

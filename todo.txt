@@ -1,0 +1,3 @@
+* Stop words are not removed correctly
+* Increase test coverage
+* Document closed test / not closed test.
