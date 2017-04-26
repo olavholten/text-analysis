@@ -21,7 +21,7 @@ public class Document {
     private final StringBuilder content = new StringBuilder();
     private final Library library;
     private final TermCache termCache;
-    private final Map<Term, TF> termFrequencies = new HashMap<>(2048);
+    private final Map<Term, TF> termFrequencies = new HashMap<>(4096);
     private double totalTermCount;
     private boolean isClosed;
 
@@ -80,7 +80,7 @@ public class Document {
         String line;
 
         while ((line = bufferedReader.readLine()) != null) {
-            sb.append(line);
+            sb.append(TextUtils.addSpaceToEndOfLine(line.trim()));
         };
 
         setText(sb.toString());
@@ -115,26 +115,6 @@ public class Document {
         return this;
     }
 
-    /**
-     * Processes this document after closing.
-     * @param content The content.
-     */
-    private void decomposeAndAddTerms(String content) {
-
-        if (content != null) {
-            String cleanContent = TextUtils.cleanString(content);
-            List<Term> termList = TextUtils.devideSentences(cleanContent).stream()
-                    .filter(e -> !e.isEmpty())
-                    .map(str -> TextUtils.getAllTerms(str, 3, library.getStopWordLists(), library.getParseType()))
-                    .flatMap(List::stream)
-                    .map(termCache::getCached) // Releases memory to GC.
-                    .collect(Collectors.toList());
-
-            termList.forEach(this::addTerm);
-        }
-    }
-
-
     public List<TF> getTF(int maxNoOfTerms) {
 
         if (!isClosed) {
@@ -143,6 +123,7 @@ public class Document {
 
         return this.termFrequencies.values().stream().sorted(this::compareTF).limit(maxNoOfTerms).collect(Collectors.toList());
     }
+
 
     public List<TFIDF> getTFIDC(int maxNoOfTerms) {
 
@@ -161,8 +142,31 @@ public class Document {
         return tfIdcList;
     }
 
-    double getTotalTermCount() {
+    public String getContent() {
+        return this.content.toString();
+    }
+
+    public double getTotalTermCount() {
         return totalTermCount;
+    }
+
+    /**
+     * Processes this document after closing.
+     * @param content The content.
+     */
+    private void decomposeAndAddTerms(String content) {
+
+        if (content != null) {
+            String cleanContent = TextUtils.cleanString(content);
+            List<Term> termList = TextUtils.devideSentences(cleanContent).stream()
+                    .filter(e -> !e.isEmpty())
+                    .map(str -> TextUtils.getAllTerms(str, 3, library.getStopWordLists(), library.getParseType()))
+                    .flatMap(List::stream)
+                    .map(termCache::getCached) // Releases memory to GC.
+                    .collect(Collectors.toList());
+
+            termList.forEach(this::addTerm);
+        }
     }
 
     private void addTerm(Term term) {

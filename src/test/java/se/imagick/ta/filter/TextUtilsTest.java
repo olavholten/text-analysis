@@ -20,7 +20,7 @@ public class TextUtilsTest {
         String text = "flygande bäckasiner sök/=a() hvila på# mjuka t¤uv%o&r.";
         IntStream chars = text.codePoints();
         StringBuilder sb = new StringBuilder();
-        chars.filter(TextUtils::isAlphaOrSpaceOrSentenceDivider).forEach(e -> sb.append(Character.toChars(e)));
+        chars.filter(TextUtils::isAlphaOrDashOrSpaceOrSentenceDivider).forEach(e -> sb.append(Character.toChars(e)));
 
         // Old Swedish manual type writer test sentence, ensuring all charachters were working :-)
         Assert.assertEquals("flygande bäckasiner söka hvila på mjuka tuvor.", sb.toString());

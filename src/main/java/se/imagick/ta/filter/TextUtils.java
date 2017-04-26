@@ -12,12 +12,15 @@ import java.util.stream.Collectors;
 /**
  * Created by Olav Holten on 2016-12-10
  */
+@SuppressWarnings("WeakerAccess")
 public class TextUtils {
 
+    public static final char NEW_LINE = 10;
+    private static final String WORD_DEVIDER = "-";
     private static final char[] SENTENCE_DIVIDER_CHARS = "!?,.;:".toCharArray();
 
-    public static boolean isAlphaOrSpaceOrSentenceDivider(int chararcter) {
-        return chararcter == 32 || isAlpha(chararcter) || isSentenceDivider(chararcter);
+    public static boolean isAlphaOrDashOrSpaceOrSentenceDivider(int chararcter) {
+        return chararcter == 32 || chararcter == 45 || isAlpha(chararcter) || isSentenceDivider(chararcter);
     }
 
     public static boolean isAlphaOrSpace(int chararcter) {
@@ -65,6 +68,12 @@ public class TextUtils {
                 .collect(Collectors.toList());
     }
 
+    public static String addSpaceToEndOfLine(String line) {
+
+        line = line.trim();
+        return (line.endsWith(WORD_DEVIDER)) ? line.substring(0, line.length() - 1) : line + " ";
+    }
+
     /**
      * Devides a sentence into words. All sentence dividers must be taken away before calling this method.
      *
@@ -76,7 +85,7 @@ public class TextUtils {
         String[] wordArray = sentence.toLowerCase().split(" ");
         return Arrays.stream(wordArray)
                 .map(String::trim)
-                .filter(w -> !w.isEmpty())
+                .filter(w -> !w.replace(WORD_DEVIDER, "").trim().isEmpty())
                 .collect(Collectors.toList());
     }
 
@@ -86,12 +95,13 @@ public class TextUtils {
      * @param sentence               The sentence for which to retrieve the terms.
      * @param maxNoOfWordsInTerm     The max number of words in a term. Eg 3 will retrieve words, be-grams and tri-grams.
      * @param stopWordListCollection Stop word lists.
-     * @param parseType
+     * @param parseType Specifies how the content will be impacted by this stop word list.
      * @return A list of list of words building up the terms found (including duplicates).
      */
     public static List<Term> getAllTerms(String sentence, int maxNoOfWordsInTerm, List<StopWordList> stopWordListCollection, ParseType parseType) {
 
         List<String> wordList = devideSentenceIntoWords(sentence);
+        // TODO Add filter to remove words with only dashes!
         int size = wordList.size();
         List<Term> termList = new ArrayList<>();
 
@@ -121,22 +131,21 @@ public class TextUtils {
                 for (StopWordList stopWordList : stopWordListCollection) {
                     termWordList.removeIf(stopWordList::isStopWord);
                 }
-            }
-            else if(parseType == ParseType.REMOVE_TERMS_WITH_ONLY_STOP_WORDS) {
+            } else if (parseType == ParseType.REMOVE_TERMS_WITH_ONLY_STOP_WORDS) {
 
                 boolean isOnlyStopWords = false;
                 for (StopWordList stopWordList : stopWordListCollection) {
                     int noOfStopWords = 0;
 
-                    for(String word : termWordList) {
-                        if(stopWordList.isStopWord(word))
-                        noOfStopWords++;
+                    for (String word : termWordList) {
+                        if (stopWordList.isStopWord(word))
+                            noOfStopWords++;
                     }
 
                     isOnlyStopWords = (noOfStopWords == termWordList.size()) || isOnlyStopWords;
                 }
 
-                if(isOnlyStopWords) {
+                if (isOnlyStopWords) {
                     termWordList.clear();
                 }
             }
@@ -172,7 +181,7 @@ public class TextUtils {
         StringBuilder sb = new StringBuilder();
         content.codePoints()
                 .map(c -> (isSpecialDevider(c)) ? ' ' : c)
-                .filter(TextUtils::isAlphaOrSpaceOrSentenceDivider)
+                .filter(TextUtils::isAlphaOrDashOrSpaceOrSentenceDivider)
                 .forEach(e -> sb.append(Character.toChars(e)));
 
         return sb.toString();
