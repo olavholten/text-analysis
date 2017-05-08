@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
  * is assumed to be the correct one. A rather naive method that needs more than a few words.
  * Could also be used to detect the document category by using stop word lists that
  * contains category specific words.
+ * TODO add functionality for retrieving percentage of words sorted out by the stop word list.
  */
 public class LanguageDetector {
 
