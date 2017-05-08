@@ -1,7 +1,7 @@
 package se.imagick.ta.filter;
 
 import se.imagick.ta.language.StopWordList;
-import se.imagick.ta.tfidc.Term;
+import se.imagick.ta.tfidf.Term;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,6 +57,8 @@ public class TextUtils {
             sentenceList = split(sentenceList, ch);
         }
 
+        sentenceList.removeIf(str -> str.trim().isEmpty());
+
         return sentenceList;
     }
 
@@ -75,10 +77,11 @@ public class TextUtils {
     }
 
     /**
-     * Devides a sentence into words. All sentence dividers must be taken away before calling this method.
+     * Devides a sentence into words. All unwanted characters must be taken away before calling this method
+     * EG sentence deviders (punctuation marks, commas, semicolon etc).
      *
      * @param sentence The sentence to be divided
-     * @return A List of strings in order of appearance in the sentence.
+     * @return A List of all words in order of appearance in the sentence.
      */
     public static List<String> devideSentenceIntoWords(String sentence) {
 
@@ -93,19 +96,19 @@ public class TextUtils {
      * Retrieves all terms in a sentence as a list of a list of words.
      *
      * @param sentence               The sentence for which to retrieve the terms.
-     * @param maxNoOfWordsInTerm     The max number of words in a term. Eg 3 will retrieve words, be-grams and tri-grams.
+     * @param maxNoOfWordsInTerms     The max number of words in a term. Eg 3 will retrieve words, be-grams and tri-grams.
      * @param stopWordListCollection Stop word lists.
      * @param parseType Specifies how the content will be impacted by this stop word list.
      * @return A list of list of words building up the terms found (including duplicates).
      */
-    public static List<Term> getAllTerms(String sentence, int maxNoOfWordsInTerm, List<StopWordList> stopWordListCollection, ParseType parseType) {
+    public static List<Term> getAllTerms(String sentence, int maxNoOfWordsInTerms, List<StopWordList> stopWordListCollection, ParseType parseType) {
 
         List<String> wordList = devideSentenceIntoWords(sentence);
         // TODO Add filter to remove words with only dashes!
         int size = wordList.size();
         List<Term> termList = new ArrayList<>();
 
-        for (int noOfWords = 1; noOfWords <= maxNoOfWordsInTerm; noOfWords++) {
+        for (int noOfWords = 1; noOfWords <= maxNoOfWordsInTerms; noOfWords++) {
             for (int termNo = 0; termNo + noOfWords <= size; termNo++) {
                 List<String> termWordList = new ArrayList<>();
                 for (int wordNo = termNo; wordNo < termNo + noOfWords; wordNo++) {

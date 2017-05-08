@@ -10,7 +10,7 @@
     <name>Imagick-TextAnalysis</name>
     <url>https://github.com/olavholten/imagick-TextAnalysis</url>
 
-    <description>TF-IDC (Term Frequency - Inverse Document Frequency) finds terms that are used more frequently in one document compared to other documents.
+    <description>TF-IDF (Term Frequency - Inverse Document Frequency) finds terms that are used more frequently in one document compared to other documents.
     </description>
 
     <licenses>

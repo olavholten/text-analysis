@@ -1,9 +1,9 @@
 package se.imagick.ta.filter;
 
 import se.imagick.ta.language.StopWordsSwedish;
-import se.imagick.ta.tfidc.Document;
-import se.imagick.ta.tfidc.Library;
-import se.imagick.ta.tfidc.TFIDF;
+import se.imagick.ta.tfidf.Document;
+import se.imagick.ta.tfidf.Library;
+import se.imagick.ta.tfidf.TFIDF;
 
 import java.io.File;
 import java.io.IOException;

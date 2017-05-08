@@ -2,7 +2,7 @@ package se.imagick.ta.misc;
 
 import org.junit.Assert;
 import org.junit.Test;
-import se.imagick.ta.tfidc.Term;
+import se.imagick.ta.tfidf.Term;
 
 import java.util.Arrays;
 

@@ -2,7 +2,7 @@ package se.imagick.ta.filter;
 
 import org.junit.Assert;
 import org.junit.Test;
-import se.imagick.ta.tfidc.Term;
+import se.imagick.ta.tfidf.Term;
 
 import java.util.List;
 import java.util.stream.IntStream;

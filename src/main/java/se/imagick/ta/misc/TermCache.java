@@ -1,6 +1,6 @@
 package se.imagick.ta.misc;
 
-import se.imagick.ta.tfidc.Term;
+import se.imagick.ta.tfidf.Term;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +17,14 @@ public class TermCache {
      * Takes a term and retrieves a cached version of it (to save memory).
      * If a cached version of the term is not saved in the cache,
      * the specified instance will be added to the cache.
+     *
+     * Usage:
+     * <pre>
+     * TermCache termCache = new TermCache();
+     * List termList = getTerms().stream()
+     *     .map(termCache::getCached)
+     *     .collect(Collectors.toList());
+     * </pre>
      *
      * @return A cached term.
      */

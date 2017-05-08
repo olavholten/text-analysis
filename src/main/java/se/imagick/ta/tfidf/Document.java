@@ -1,4 +1,4 @@
-package se.imagick.ta.tfidc;
+package se.imagick.ta.tfidf;
 
 import se.imagick.ta.filter.EncodingCorrectReader;
 import se.imagick.ta.filter.TextUtils;
@@ -113,9 +113,9 @@ public class Document {
     public Document close() {
 
         validateOpenAndSetClosed();
-        decomposeAndAddTerms(this.name);
-        decomposeAndAddTerms(this.headline);
-        decomposeAndAddTerms(this.content.toString());
+        decomposeAndAddTerms(this.name, this.library.getMaxNoOfWordsInTerms());
+        decomposeAndAddTerms(this.headline, this.library.getMaxNoOfWordsInTerms());
+        decomposeAndAddTerms(this.content.toString(), this.library.getMaxNoOfWordsInTerms());
 
         return this;
     }
@@ -178,13 +178,12 @@ public class Document {
      *
      * @param content The content.
      */
-    private void decomposeAndAddTerms(String content) {
+    private void decomposeAndAddTerms(String content, int maxNoOfWordsInTerms) {
 
         if (content != null) {
             String cleanContent = TextUtils.cleanString(content);
             List<Term> termList = TextUtils.devideSentences(cleanContent).stream()
-                    .filter(e -> !e.isEmpty())
-                    .map(str -> TextUtils.getAllTerms(str, 1, library.getStopWordLists(), library.getParseType()))
+                    .map(str -> TextUtils.getAllTerms(str, maxNoOfWordsInTerms, library.getStopWordLists(), library.getParseType()))
                     .flatMap(List::stream)
                     .map(termCache::getCached) // Releases memory to GC.
                     .collect(Collectors.toList());

@@ -1,4 +1,4 @@
-package se.imagick.ta.tfidc;
+package se.imagick.ta.tfidf;
 
 import se.imagick.ta.filter.ParseType;
 import se.imagick.ta.language.StopWordList;
@@ -22,7 +22,7 @@ public class Library {
     private final TermCache termCache = new TermCache();
 
     public Library(ParseType parseType) {
-        this(1, parseType);
+        this(3, parseType);
     }
 
     private Library(int maxNoOfWordsInTerms, ParseType parseType) { // bi-grams, tri-grams etc not implemented.
@@ -97,5 +97,9 @@ public class Library {
 
     public ParseType getParseType() {
         return parseType;
+    }
+
+    public int getMaxNoOfWordsInTerms() {
+        return maxNoOfWordsInTerms;
     }
 }

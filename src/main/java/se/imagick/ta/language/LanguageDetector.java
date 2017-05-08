@@ -1,8 +1,7 @@
 package se.imagick.ta.language;
 
-import se.imagick.ta.filter.ParseType;
 import se.imagick.ta.filter.TextUtils;
-import se.imagick.ta.tfidc.Term;
+import se.imagick.ta.tfidf.Term;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package se.imagick.ta.tfidc;
+package se.imagick.ta.tfidf;
 
 import org.junit.Assert;
 import org.junit.Test;
