@@ -21,7 +21,7 @@ public class Document {
     private final StringBuilder content = new StringBuilder();
     private final Library library;
     private final TermCache termCache;
-    private final Map<Term, TF> termFrequencies = new HashMap<>(4096);
+    private final Map<Term, TF> termFrequencies = new HashMap<>(15000);
     private double totalTermCount;
     private boolean isClosed;
 
@@ -32,20 +32,25 @@ public class Document {
 
     /**
      * Adds a name to this document (EG file name, URL, book title etc).
+     *
      * @param name The name.
      * @return This document.
      */
     public Document setName(String name) {
+        validateOpen();
         this.name = name;
         return this;
     }
 
     /**
      * Adds a headline to the document.
+     *
      * @param headline The headline to be added.
      * @return This document.
      */
+
     public Document setHeadline(String headline) {
+        validateOpen();
         this.headline = headline;
         return this;
     }
@@ -56,24 +61,22 @@ public class Document {
      * @param text The text to be append.
      * @return this document.
      */
-    public Document setText(String text) {
-
-        if (isClosed) {
-            throw new IllegalStateException("The document is closed!");
-        }
-
+    public Document addContent(String text) {
+        validateOpen();
         content.append(text);
         return this;
     }
 
     /**
      * Sets the text to the content of the specified text resource (file), and then closes the document for further input.
+     *
      * @param textResource An InputStream containing text.
      * @return This document.
      * @throws IOException If the resource could not be read.
      */
-    public Document setText(InputStream textResource) throws IOException {
+    public Document addContent(InputStream textResource) throws IOException {
 
+        validateOpen();
         Optional<Reader> reader = EncodingCorrectReader.getReader(textResource);
         BufferedReader bufferedReader = new BufferedReader(reader.orElse(null));
         StringBuilder sb = new StringBuilder();
@@ -81,77 +84,98 @@ public class Document {
 
         while ((line = bufferedReader.readLine()) != null) {
             sb.append(TextUtils.addSpaceToEndOfLine(line.trim()));
-        };
+        }
 
-        setText(sb.toString());
-        close();
+        addContent(sb.toString());
+
         return this;
     }
 
     /**
      * Sets the text to the content of the specified text resource (file), and then closes the document for further input.
+     *
      * @param textResournce A file containing text.
      * @return This document.
      * @throws IOException If the resource could not be read.
      */
-    public Document setText(File textResournce) throws IOException {
-        setText(new FileInputStream(textResournce));
-        close();
+    public Document addContent(File textResournce) throws IOException {
+        validateOpen();
+        addContent(new FileInputStream(textResournce));
         return this;
     }
 
     /**
      * Closes the document for input and starts processing the text.
+     * Ignores subsequent calls.
+     *
      * @return This document.
      */
     public Document close() {
-        if (!isClosed) {
-            isClosed = true;
-            decomposeAndAddTerms(this.name);
-            decomposeAndAddTerms(this.headline);
-            decomposeAndAddTerms(this.content.toString());
-        }
+
+        validateOpenAndSetClosed();
+        decomposeAndAddTerms(this.name);
+        decomposeAndAddTerms(this.headline);
+        decomposeAndAddTerms(this.content.toString());
 
         return this;
     }
 
     public List<TF> getTF(int maxNoOfTerms) {
-
-        if (!isClosed) {
-            throw new IllegalStateException("The document is not closed!");
-        }
-
+        validateClosed();
         return this.termFrequencies.values().stream().sorted(this::compareTF).limit(maxNoOfTerms).collect(Collectors.toList());
     }
 
-
     public List<TFIDF> getTFIDC(int maxNoOfTerms) {
 
-        if (!isClosed) {
-            throw new IllegalStateException("The document is not closed!");
-        }
-
+        validateClosed();
         double totNoOfDocs = this.library.getNoOfDocumentsInLibrary();
 
-        List<TFIDF> tfIdcList = termFrequencies.values().stream()
+        return termFrequencies.values().stream()
                 .map(tf -> new TFIDF(tf.getTerm(), tf.getFrequency(), this.library.getNoOfDocumentsWithTerm(tf.getTerm()), totNoOfDocs))
                 .sorted(this::compareTFIDC)
                 .limit(maxNoOfTerms)
                 .collect(Collectors.toList());
-
-        return tfIdcList;
     }
 
     public String getContent() {
         return this.content.toString();
     }
 
+
     public double getTotalTermCount() {
+        validateClosed();
         return totalTermCount;
+    }
+
+    private void validateOpen() {
+        synchronized (this) {
+            if (isClosed) {
+                throw new IllegalStateException("The document is closed!");
+            }
+        }
+    }
+
+    private void validateClosed() {
+        synchronized (this) {
+            if (!isClosed) {
+                throw new IllegalStateException("The document is not closed!");
+            }
+        }
+    }
+
+    private void validateOpenAndSetClosed() {
+        synchronized (this) {
+            if (isClosed) {
+                throw new IllegalStateException("The document is closed!");
+            }
+
+            isClosed = true;
+        }
     }
 
     /**
      * Processes this document after closing.
+     *
      * @param content The content.
      */
     private void decomposeAndAddTerms(String content) {
@@ -160,7 +184,7 @@ public class Document {
             String cleanContent = TextUtils.cleanString(content);
             List<Term> termList = TextUtils.devideSentences(cleanContent).stream()
                     .filter(e -> !e.isEmpty())
-                    .map(str -> TextUtils.getAllTerms(str, 3, library.getStopWordLists(), library.getParseType()))
+                    .map(str -> TextUtils.getAllTerms(str, 1, library.getStopWordLists(), library.getParseType()))
                     .flatMap(List::stream)
                     .map(termCache::getCached) // Releases memory to GC.
                     .collect(Collectors.toList());

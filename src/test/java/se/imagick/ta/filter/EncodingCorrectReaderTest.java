@@ -23,8 +23,10 @@ public class EncodingCorrectReaderTest {
         Document document = null;
 
         for (File bookFile : new File("src/main/resources/books/se").listFiles()) {
-            document = library.addAndGetNewDocument().setText(bookFile);
-            document.close();
+            document = library.addAndGetNewDocument()
+                    .setName(bookFile.getName())
+                    .addContent(bookFile)
+                    .close();
         }
 
         List<TFIDF> tfidcList = document.getTFIDC(10000);
