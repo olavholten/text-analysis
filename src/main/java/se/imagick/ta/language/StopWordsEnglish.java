@@ -15,7 +15,7 @@ public class StopWordsEnglish extends StopWordList {
                 "be", "were", "they", "all", "from", "have", "would", "by", "which", "one", "said", "is",
                 "an", "or", "so", "if", "there", "no", "me", "up", "what", "who", "their", "could", "out",
                 "when", "we", "now", "do", "been", "them", "then", "my", "are", "did", "some", "about",
-                "will", "over");
+                "will");
     }
 
     @Override
