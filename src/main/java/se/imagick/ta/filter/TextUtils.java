@@ -18,6 +18,7 @@ public class TextUtils {
     public static final char NEW_LINE = 10;
     private static final String WORD_DEVIDER = "-";
     private static final char[] SENTENCE_DIVIDER_CHARS = "!?,.;:".toCharArray();
+    public static final String REGEX_PREFIX = "\\";
 
     public static boolean isAlphaOrDashOrSpaceOrSentenceDivider(int chararcter) {
         return chararcter == 32 || chararcter == 45 || isAlpha(chararcter) || isSentenceDivider(chararcter);
@@ -64,7 +65,7 @@ public class TextUtils {
 
     public static List<String> split(List<String> fragments, char ch) {
         return fragments.stream()
-                .flatMap(str -> Arrays.stream(str.split("\\" + ch)))
+                .flatMap(str -> Arrays.stream(str.split(REGEX_PREFIX + ch)))
                 .map(String::trim)
                 .filter(str -> !str.isEmpty())
                 .collect(Collectors.toList());
@@ -96,15 +97,14 @@ public class TextUtils {
      * Retrieves all terms in a sentence as a list of a list of words.
      *
      * @param sentence               The sentence for which to retrieve the terms.
-     * @param maxNoOfWordsInTerms     The max number of words in a term. Eg 3 will retrieve words, be-grams and tri-grams.
+     * @param maxNoOfWordsInTerms    The max number of words in a term. Eg 3 will retrieve words, be-grams and tri-grams.
      * @param stopWordListCollection Stop word lists.
-     * @param parseType Specifies how the content will be impacted by this stop word list.
+     * @param parseType              Specifies how the content will be impacted by this stop word list.
      * @return A list of list of words building up the terms found (including duplicates).
      */
     public static List<Term> getAllTerms(String sentence, int maxNoOfWordsInTerms, List<StopWordList> stopWordListCollection, ParseType parseType) {
 
         List<String> wordList = devideSentenceIntoWords(sentence);
-        // TODO Add filter to remove words with only dashes!
         int size = wordList.size();
         List<Term> termList = new ArrayList<>();
 
@@ -191,10 +191,11 @@ public class TextUtils {
     }
 
     public static boolean isSpecialDevider(int c) {
-        return c == '('
+        return c == '&'
+                || c == '('
                 || c == ')'
                 || c == '['
                 || c == ']'
-                || c == '&';
+                ;
     }
 }

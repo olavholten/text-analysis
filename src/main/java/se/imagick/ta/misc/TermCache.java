@@ -11,7 +11,7 @@ import java.util.Map;
  * Date: 2017-03-07
  */
 public class TermCache {
-    private Map<Term, Term> termCache = new HashMap<>();
+    private Map<Term, Term> termCache = new HashMap<>(150000);
 
     /**
      * Takes a term and retrieves a cached version of it (to save memory).
