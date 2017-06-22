@@ -1,6 +1,6 @@
 package se.imagick.ta.tfidf;
 
-import se.imagick.ta.filter.TextUtils;
+import se.imagick.ta.filter.CharacterUtils;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class Term {
     private int hashCode;
 
     public Term(List<String> wordList) {
-        this.joinedTerm = TextUtils.join(wordList);
+        this.joinedTerm = CharacterUtils.join(wordList);
         this.noOfWords = wordList.size();
         this.hashCode = this.joinedTerm.hashCode();
     }

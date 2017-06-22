@@ -1,81 +1,70 @@
 package se.imagick.ta.filter;
 
 import se.imagick.ta.language.StopWordList;
+import se.imagick.ta.misc.TermCache;
 import se.imagick.ta.tfidf.Term;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
- * Created by Olav Holten on 2016-12-10
+ * Created by
+ * User: Olav Holten
+ * Date: 2017-06-08
  */
-@SuppressWarnings("WeakerAccess")
-public class TextUtils {
+public class ParseUtils {
 
-    public static final char NEW_LINE = 10;
-    private static final String WORD_DEVIDER = "-";
-    private static final char[] SENTENCE_DIVIDER_CHARS = "!?,.;:".toCharArray();
-    public static final String REGEX_PREFIX = "\\";
-
-    public static boolean isAlphaOrDashOrSpaceOrSentenceDivider(int chararcter) {
-        return chararcter == 32 || chararcter == 45 || isAlpha(chararcter) || isSentenceDivider(chararcter);
+    public static List<Term> parseDocumentRows(List<String> contentList) {
+        StringBuilder content = new StringBuilder(20000);
+        contentList.forEach(line -> content.append(line).append(" "));
+        return ParseUtils.parseDocument(content);
     }
 
-    public static boolean isAlphaOrSpace(int chararcter) {
-        return chararcter == 32 || isAlpha(chararcter);
-    }
-
-    public static boolean isSentenceDivider(int character) {
-
-        for (char devider : SENTENCE_DIVIDER_CHARS) { // Faster than indexOf
-            if (character == devider) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static boolean isAlpha(int character) {
-        return (character >= 65 && character <= 90)
-                || (character >= 97 && character <= 122)
-                || (character >= 192 && character <= 214)
-                || (character >= 216 && character <= 122)
-                || (character >= 216 && character <= 246)
-                || (character >= 248 && character <= 450)
-                ;
-    }
-
-    public static List<String> devideSentences(String text) {
-
-        List<String> sentenceList = new ArrayList<>();
-        sentenceList.add(text);
-
-        for (char ch : SENTENCE_DIVIDER_CHARS) {
-            sentenceList = split(sentenceList, ch);
-        }
-
-        sentenceList.removeIf(str -> str.trim().isEmpty());
-
-        return sentenceList;
-    }
-
-    public static List<String> split(List<String> fragments, char ch) {
-        return fragments.stream()
-                .flatMap(str -> Arrays.stream(str.split(REGEX_PREFIX + ch)))
-                .map(String::trim)
-                .filter(str -> !str.isEmpty())
+    public static List<Term> parseDocument(StringBuilder content) {
+        String cleanContent = CharacterUtils.cleanString(content.toString());
+        TermCache termCache = new TermCache();
+        return CharacterUtils.devideSentences(cleanContent).stream()
+                .map(str -> ParseUtils.getAllTerms(str, 1, null, ParseType.KEEP_ALL_WORDS))
+                .flatMap(List::stream)
+                .map(termCache::getCached) // Releases memory to GC.
                 .collect(Collectors.toList());
     }
 
-    public static String addSpaceToEndOfLine(String line) {
-
-        line = line.trim();
-        return (line.endsWith(WORD_DEVIDER)) ? line.substring(0, line.length() - 1) : line + " ";
+    public static List<String> addContentRowsToList(BufferedReader reader) throws IOException {
+        return addContentRowsToList(reader, new ArrayList<>());
     }
+
+    public static List<String> addContentRowsToList(BufferedReader reader, List<String> rowList) throws IOException {
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            rowList.add(line);
+        }
+
+        return rowList;
+    }
+
+    public List<Term> getWordsInDocument(String content) throws IOException {
+
+        return ParseUtils.getWordsInDocument(new ByteArrayInputStream(content.getBytes()));
+    }
+
+    public List<Term> getWordsInDocument(File contentFile) throws IOException {
+        return ParseUtils.getWordsInDocument(new FileInputStream(contentFile));
+    }
+
+    public static List<Term> getWordsInDocument(InputStream contentStream) throws IOException {
+
+        try (BufferedReader reader = getEncodingCorrectReader(contentStream)){
+            List<String> rowList = ParseUtils.addContentRowsToList(reader, new ArrayList<>());
+            return ParseUtils.parseDocumentRows(rowList);
+        }
+    }
+
+
 
     /**
      * Devides a sentence into words. All unwanted characters must be taken away before calling this method
@@ -89,7 +78,7 @@ public class TextUtils {
         String[] wordArray = sentence.toLowerCase().split(" ");
         return Arrays.stream(wordArray)
                 .map(String::trim)
-                .filter(w -> !w.replace(WORD_DEVIDER, "").trim().isEmpty())
+                .filter(w -> !w.replace(CharacterUtils.WORD_DEVIDER, "").trim().isEmpty())
                 .collect(Collectors.toList());
     }
 
@@ -173,29 +162,27 @@ public class TextUtils {
         return termList;
     }
 
-    public static String join(List<String> wordList) {
-        StringJoiner sj = new StringJoiner(" ");
-        wordList.forEach(sj::add);
-        return sj.toString().trim();
+    public static List<String> getRowListFromDirectoryFiles(String rootPath, String subPath) throws Exception {
+
+        File languageDir = new File(rootPath, subPath);
+        File[] textFiles = languageDir.listFiles();
+        List<String> rowList = new ArrayList<>();
+
+        for (File file : textFiles) {
+            BufferedReader reader = getEncodingCorrectReader(file);
+            ParseUtils.addContentRowsToList(reader, rowList);
+        }
+
+        return rowList;
     }
 
-    public static String cleanString(String content) {
-
-        StringBuilder sb = new StringBuilder();
-        content.codePoints()
-                .map(c -> (isSpecialDevider(c)) ? ' ' : c)
-                .filter(TextUtils::isAlphaOrDashOrSpaceOrSentenceDivider)
-                .forEach(e -> sb.append(Character.toChars(e)));
-
-        return sb.toString();
+    private static BufferedReader getEncodingCorrectReader(File textFile) throws IOException {
+        return new BufferedReader(EncodingCorrectReader.getReader(textFile).orElseThrow(() -> new IOException("Error reading file")));
     }
 
-    public static boolean isSpecialDevider(int c) {
-        return c == '&'
-                || c == '('
-                || c == ')'
-                || c == '['
-                || c == ']'
-                ;
+    private static BufferedReader getEncodingCorrectReader(InputStream contentStream) throws IOException {
+        return new BufferedReader(EncodingCorrectReader.getReader(contentStream).orElseThrow(() -> new IOException("Error reading file")));
     }
+
+
 }

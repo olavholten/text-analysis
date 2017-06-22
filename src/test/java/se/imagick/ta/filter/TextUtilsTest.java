@@ -20,7 +20,7 @@ public class TextUtilsTest {
         String text = "flygande bäckasiner sök/=a() hvila på# mjuka t¤uv%o&r.";
         IntStream chars = text.codePoints();
         StringBuilder sb = new StringBuilder();
-        chars.filter(TextUtils::isAlphaOrDashOrSpaceOrSentenceDivider).forEach(e -> sb.append(Character.toChars(e)));
+        chars.filter(CharacterUtils::isAlphaOrDashOrSpaceOrSentenceDivider).forEach(e -> sb.append(Character.toChars(e)));
 
         // Old Swedish manual type writer test sentence, ensuring all charachters were working :-)
         Assert.assertEquals("flygande bäckasiner söka hvila på mjuka tuvor.", sb.toString());
@@ -31,21 +31,21 @@ public class TextUtilsTest {
         String text = "The all new website was grand. It had all the bells and wistles you could think of. " +
                 "There was just one flaw, it had no customers that were willing to pay for it's services.";
 
-        List<String> sentenceList = TextUtils.devideSentences(text);
+        List<String> sentenceList = CharacterUtils.devideSentences(text);
         Assert.assertEquals(4, sentenceList.size());
     }
 
     @Test
     public void testDevideSentenceIntoWords() {
         String text = "  This is a sentence to be devided   into words  ";
-        List<String> wordList = TextUtils.devideSentenceIntoWords(text);
+        List<String> wordList = ParseUtils.devideSentenceIntoWords(text);
         Assert.assertEquals(9, wordList.size());
     }
 
     @Test
     public void testGetAllTerms() {
         String text = "This is a sentence";
-        List<Term> termList = TextUtils.getAllTerms(text, 3, null, null);
+        List<Term> termList = ParseUtils.getAllTerms(text, 3, null, null);
         Assert.assertEquals(9, termList.size());
 
         Assert.assertEquals("this", termList.get(0).getJoinedTerm());
@@ -64,7 +64,7 @@ public class TextUtilsTest {
     @Test
     public void getAllTermsAsConcatStrings() {
         String text = "This is a sentence";
-        List<String> termList = TextUtils.getAllTermsAsConcatStrings(text, 3, null);
+        List<String> termList = ParseUtils.getAllTermsAsConcatStrings(text, 3, null);
         Assert.assertEquals(9, termList.size());
 
         Assert.assertEquals("this", termList.get(0));
@@ -85,7 +85,7 @@ public class TextUtilsTest {
         String content = "This(is)a very odd[sentence]to test.";
         StringBuilder sb = new StringBuilder();
         content.codePoints()
-                .map(c -> (TextUtils.isSpecialDevider(c))?' ':c)
+                .map(c -> (CharacterUtils.isSpecialDevider(c))?' ':c)
                 .forEach(e -> sb.append(Character.toChars(e)));
 
         Assert.assertEquals("This is a very odd sentence to test.", sb.toString());
