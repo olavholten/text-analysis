@@ -1,8 +1,8 @@
 package se.imagick.ta.tfidf;
 
+import se.imagick.ta.filter.CharacterUtils;
 import se.imagick.ta.filter.EncodingCorrectReader;
 import se.imagick.ta.filter.ParseUtils;
-import se.imagick.ta.filter.CharacterUtils;
 import se.imagick.ta.misc.TermCache;
 
 import java.io.*;
@@ -184,7 +184,7 @@ public class Document {
         if (content != null) {
             String cleanContent = CharacterUtils.cleanString(content);
             List<Term> termList = CharacterUtils.devideSentences(cleanContent).stream()
-                    .map(str -> ParseUtils.getAllTerms(str, maxNoOfWordsInTerms, library.getStopWordLists(), library.getParseType()))
+                    .map(str -> ParseUtils.getAllTermsInSentence(str, maxNoOfWordsInTerms, library.getStopWordLists(), library.getParseType()))
                     .flatMap(List::stream)
                     .map(termCache::getCached) // Releases memory to GC.
                     .collect(Collectors.toList());

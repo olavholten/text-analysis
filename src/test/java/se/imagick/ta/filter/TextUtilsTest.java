@@ -45,7 +45,7 @@ public class TextUtilsTest {
     @Test
     public void testGetAllTerms() {
         String text = "This is a sentence";
-        List<Term> termList = ParseUtils.getAllTerms(text, 3, null, null);
+        List<Term> termList = ParseUtils.getAllTermsInSentence(text, 3, null, null);
         Assert.assertEquals(9, termList.size());
 
         Assert.assertEquals("this", termList.get(0).getJoinedTerm());
@@ -85,7 +85,7 @@ public class TextUtilsTest {
         String content = "This(is)a very odd[sentence]to test.";
         StringBuilder sb = new StringBuilder();
         content.codePoints()
-                .map(c -> (CharacterUtils.isSpecialDevider(c))?' ':c)
+                .map(c -> (CharacterUtils.isSpecialDevider(c)) ? ' ' : c)
                 .forEach(e -> sb.append(Character.toChars(e)));
 
         Assert.assertEquals("This is a very odd sentence to test.", sb.toString());

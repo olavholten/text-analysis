@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
  */
 public class ParseUtils {
 
-    public static List<Term> parseDocumentRows(List<String> contentList) {
+    public static List<Term> parseDocumentRows(List<String> contentRowList) {
         StringBuilder content = new StringBuilder(20000);
-        contentList.forEach(line -> content.append(line).append(" "));
+        contentRowList.forEach(line -> content.append(line).append(" \n"));
         return ParseUtils.parseDocument(content);
     }
 
@@ -27,16 +27,20 @@ public class ParseUtils {
         String cleanContent = CharacterUtils.cleanString(content.toString());
         TermCache termCache = new TermCache();
         return CharacterUtils.devideSentences(cleanContent).stream()
-                .map(str -> ParseUtils.getAllTerms(str, 1, null, ParseType.KEEP_ALL_WORDS))
+                .map(str -> ParseUtils.getAllTermsInSentence(str, 1, null, ParseType.KEEP_ALL_WORDS))
                 .flatMap(List::stream)
                 .map(termCache::getCached) // Releases memory to GC.
                 .collect(Collectors.toList());
     }
 
-    public static List<String> addContentRowsToList(BufferedReader reader) throws IOException {
-        return addContentRowsToList(reader, new ArrayList<>());
-    }
-
+    /**
+     * Convenience method that reads rows from a BufferedReader and ads them row by row to the given list.
+     *
+     * @param reader  The buffered reader containing the content.
+     * @param rowList The list to wich the content rows will be added.
+     * @return The same list submitted to the method.
+     * @throws IOException If the Reader fails.
+     */
     public static List<String> addContentRowsToList(BufferedReader reader, List<String> rowList) throws IOException {
 
         String line;
@@ -58,12 +62,11 @@ public class ParseUtils {
 
     public static List<Term> getWordsInDocument(InputStream contentStream) throws IOException {
 
-        try (BufferedReader reader = getEncodingCorrectReader(contentStream)){
+        try (BufferedReader reader = getEncodingCorrectReader(contentStream)) {
             List<String> rowList = ParseUtils.addContentRowsToList(reader, new ArrayList<>());
             return ParseUtils.parseDocumentRows(rowList);
         }
     }
-
 
 
     /**
@@ -91,7 +94,7 @@ public class ParseUtils {
      * @param parseType              Specifies how the content will be impacted by this stop word list.
      * @return A list of list of words building up the terms found (including duplicates).
      */
-    public static List<Term> getAllTerms(String sentence, int maxNoOfWordsInTerms, List<StopWordList> stopWordListCollection, ParseType parseType) {
+    public static List<Term> getAllTermsInSentence(String sentence, int maxNoOfWordsInTerms, List<StopWordList> stopWordListCollection, ParseType parseType) {
 
         List<String> wordList = devideSentenceIntoWords(sentence);
         int size = wordList.size();
@@ -153,30 +156,13 @@ public class ParseUtils {
      */
     public static List<String> getAllTermsAsConcatStrings(String sentence, int maxNoOfWordsInTerm, List<StopWordList> stopWordListCollection) {
 
-
-        List<Term> allTerms = getAllTerms(sentence, maxNoOfWordsInTerm, stopWordListCollection, null);
-
-        List<String> termList = new ArrayList<>();
-        allTerms.forEach(term -> termList.add(term.getJoinedTerm()));
-
-        return termList;
+        List<Term> allTerms = getAllTermsInSentence(sentence, maxNoOfWordsInTerm, stopWordListCollection, null);
+        return allTerms.stream()
+                .map(Term::getJoinedTerm)
+                .collect(Collectors.toList());
     }
 
-    public static List<String> getRowListFromDirectoryFiles(String rootPath, String subPath) throws Exception {
-
-        File languageDir = new File(rootPath, subPath);
-        File[] textFiles = languageDir.listFiles();
-        List<String> rowList = new ArrayList<>();
-
-        for (File file : textFiles) {
-            BufferedReader reader = getEncodingCorrectReader(file);
-            ParseUtils.addContentRowsToList(reader, rowList);
-        }
-
-        return rowList;
-    }
-
-    private static BufferedReader getEncodingCorrectReader(File textFile) throws IOException {
+    public static BufferedReader getEncodingCorrectReader(File textFile) throws IOException {
         return new BufferedReader(EncodingCorrectReader.getReader(textFile).orElseThrow(() -> new IOException("Error reading file")));
     }
 
