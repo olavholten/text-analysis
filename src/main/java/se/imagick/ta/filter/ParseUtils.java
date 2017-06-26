@@ -17,20 +17,21 @@ import java.util.stream.Collectors;
  */
 public class ParseUtils {
 
-    public static List<Term> parseDocumentRows(List<String> contentRowList) {
-        StringBuilder content = new StringBuilder(20000);
-        contentRowList.forEach(line -> content.append(line).append(" \n"));
-        return ParseUtils.parseDocument(content);
+    public List<Term> getTermsInDocument(String content) throws IOException {
+
+        return ParseUtils.getTermsInDocument(new ByteArrayInputStream(content.getBytes()));
     }
 
-    public static List<Term> parseDocument(StringBuilder content) {
-        String cleanContent = CharacterUtils.cleanString(content.toString());
-        TermCache termCache = new TermCache();
-        return CharacterUtils.devideSentences(cleanContent).stream()
-                .map(str -> ParseUtils.getAllTermsInSentence(str, 1, null, ParseType.KEEP_ALL_WORDS))
-                .flatMap(List::stream)
-                .map(termCache::getCached) // Releases memory to GC.
-                .collect(Collectors.toList());
+    public List<Term> getTermsInDocument(File contentFile) throws IOException {
+        return ParseUtils.getTermsInDocument(new FileInputStream(contentFile));
+    }
+
+    public static List<Term> getTermsInDocument(InputStream contentStream) throws IOException {
+
+        try (BufferedReader reader = getEncodingCorrectReader(contentStream)) {
+            List<String> rowList = ParseUtils.addContentRowsToList(reader, new ArrayList<>());
+            return ParseUtils.parseDocumentRows(rowList);
+        }
     }
 
     /**
@@ -51,23 +52,25 @@ public class ParseUtils {
         return rowList;
     }
 
-    public List<Term> getWordsInDocument(String content) throws IOException {
-
-        return ParseUtils.getWordsInDocument(new ByteArrayInputStream(content.getBytes()));
+    public static List<Term> parseDocumentRows(List<String> contentRowList) {
+        StringBuilder content = new StringBuilder(20000);
+        contentRowList.forEach(line -> content.append(line).append(" \n"));
+        return ParseUtils.parseDocument(content);
     }
 
-    public List<Term> getWordsInDocument(File contentFile) throws IOException {
-        return ParseUtils.getWordsInDocument(new FileInputStream(contentFile));
+    public static List<Term> parseDocument(StringBuilder content) {
+        String cleanContent = CharacterUtils.cleanString(content.toString());
+        return parseDocument(cleanContent);
     }
 
-    public static List<Term> getWordsInDocument(InputStream contentStream) throws IOException {
-
-        try (BufferedReader reader = getEncodingCorrectReader(contentStream)) {
-            List<String> rowList = ParseUtils.addContentRowsToList(reader, new ArrayList<>());
-            return ParseUtils.parseDocumentRows(rowList);
-        }
+    private static List<Term> parseDocument(String cleanContent) {
+        TermCache termCache = new TermCache();
+        return CharacterUtils.devideSentences(cleanContent).stream()
+                .map(str -> ParseUtils.getAllTermsInSentence(str, 1, null, ParseType.KEEP_ALL_WORDS))
+                .flatMap(List::stream)
+                .map(termCache::getCached) // Releases memory to GC.
+                .collect(Collectors.toList());
     }
-
 
     /**
      * Devides a sentence into words. All unwanted characters must be taken away before calling this method
@@ -102,7 +105,9 @@ public class ParseUtils {
 
         for (int noOfWords = 1; noOfWords <= maxNoOfWordsInTerms; noOfWords++) {
             for (int termNo = 0; termNo + noOfWords <= size; termNo++) {
+
                 List<String> termWordList = new ArrayList<>();
+
                 for (int wordNo = termNo; wordNo < termNo + noOfWords; wordNo++) {
                     String word = wordList.get(wordNo);
                     termWordList.add(word);
@@ -148,7 +153,7 @@ public class ParseUtils {
     }
 
     /**
-     * Retrieves all terms in a sentence as a list of a list of words.
+     * Retrieves all terms in a sentence as a list of words.
      *
      * @param sentence           The sentence for which to retrieve the terms.
      * @param maxNoOfWordsInTerm The max number of words in a term. Eg 3 will retrieve words, be-grams and tri-grams.
@@ -160,10 +165,6 @@ public class ParseUtils {
         return allTerms.stream()
                 .map(Term::getJoinedTerm)
                 .collect(Collectors.toList());
-    }
-
-    public static BufferedReader getEncodingCorrectReader(File textFile) throws IOException {
-        return new BufferedReader(EncodingCorrectReader.getReader(textFile).orElseThrow(() -> new IOException("Error reading file")));
     }
 
     private static BufferedReader getEncodingCorrectReader(InputStream contentStream) throws IOException {
