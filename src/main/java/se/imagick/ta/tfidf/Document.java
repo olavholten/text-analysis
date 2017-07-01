@@ -81,12 +81,7 @@ public class Document {
         Optional<Reader> reader = EncodingCorrectReader.getReader(textResource);
         BufferedReader bufferedReader = new BufferedReader(reader.orElseThrow(() -> new IOException("Error reading file")));
         StringBuilder sb = new StringBuilder();
-        String line;
-
-        while ((line = bufferedReader.readLine()) != null) {
-            sb.append(CharacterUtils.addSpaceToEndOfLine(line.trim()));
-        }
-
+        bufferedReader.lines().forEach(line -> sb.append(CharacterUtils.addSpaceToEndOfLine(line.trim())));
         addContent(sb.toString());
 
         return this;
@@ -206,12 +201,10 @@ public class Document {
     }
 
     private int compareTF(TF tf1, TF tf2) {
-        double delta = tf2.getFrequency() - tf1.getFrequency();
-        return (delta < 0 ? -1 : (delta == 0) ? 0 : 1);
+        return (int)Math.signum(tf2.getFrequency() - tf1.getFrequency());
     }
 
     private int compareTFIDC(TFIDF TFIDF1, TFIDF TFIDF2) {
-        double delta = TFIDF2.getTfIdf() - TFIDF1.getTfIdf();
-        return (delta < 0 ? -1 : (delta == 0) ? 0 : 1);
+        return (int)Math.signum(TFIDF2.getTfIdf() - TFIDF1.getTfIdf());
     }
 }

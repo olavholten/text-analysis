@@ -23,7 +23,7 @@ public class TF {
 
     public double getFrequency() {
         // This method is used for sorting, so prevention of multiple calculations is needed.
-        frequency =  (frequency == null)?noOfOccurenciesOfTerm / document.getTotalTermCount():frequency;
+        frequency = (frequency == null) ? noOfOccurenciesOfTerm / document.getTotalTermCount() : frequency;
         return frequency;
     }
 

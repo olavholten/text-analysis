@@ -14,6 +14,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * Creates a stop word list using several documents. To have some confidence in a stop word list
+ * there must be at least 1-2 million words, preferably from many different sources for texts
+ * (books, articles, etc). To make a subject specific stop word list, a generic one should be run
+ * on the texts first to filter out the usual suspects. The sources must be carefully selected
+ * to be only in the category you want to find. And please remember that stop word for a certain
+ * subject, such as medical or fashion articles, changes quickly over time. They will have to be
+ * updated regularly to be effective.
+ *
  * Created by
  * User: Olav Holten
  * Date: 2017-03-02
@@ -62,7 +70,7 @@ public class StopWordGenerator {
 
         for (File textFile : textFiles) {
             BufferedReader bufferedReader = new BufferedReader(EncodingCorrectReader.getReader(textFile).orElseThrow(() -> new IOException("Error reading file")));
-            ParseUtils.addContentRowsToList(bufferedReader, rowList);
+            bufferedReader.lines().forEach(rowList::add);
         }
 
         return rowList;
@@ -85,7 +93,7 @@ public class StopWordGenerator {
 
     private static class TermFrequencySortEntry implements Comparable<TermFrequencySortEntry> {
 
-        public Term term;
+        Term term;
         Long noof;
 
         // Convenience method for map.computeIfAbsent.

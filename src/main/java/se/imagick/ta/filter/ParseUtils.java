@@ -29,32 +29,15 @@ public class ParseUtils {
     public static List<Term> getTermsInDocument(InputStream contentStream) throws IOException {
 
         try (BufferedReader reader = getEncodingCorrectReader(contentStream)) {
-            List<String> rowList = ParseUtils.addContentRowsToList(reader, new ArrayList<>());
+            List<String> rowList = new ArrayList<>();
+            reader.lines().forEach(rowList::add);
             return ParseUtils.parseDocumentRows(rowList);
         }
     }
 
-    /**
-     * Convenience method that reads rows from a BufferedReader and ads them row by row to the given list.
-     *
-     * @param reader  The buffered reader containing the content.
-     * @param rowList The list to wich the content rows will be added.
-     * @return The same list submitted to the method.
-     * @throws IOException If the Reader fails.
-     */
-    public static List<String> addContentRowsToList(BufferedReader reader, List<String> rowList) throws IOException {
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-            rowList.add(line);
-        }
-
-        return rowList;
-    }
-
     public static List<Term> parseDocumentRows(List<String> contentRowList) {
         StringBuilder content = new StringBuilder(20000);
-        contentRowList.forEach(line -> content.append(line).append(" \n"));
+        contentRowList.forEach(line -> content.append(line.trim()).append(" \n"));
         return ParseUtils.parseDocument(content);
     }
 
@@ -128,35 +111,26 @@ public class ParseUtils {
         if (stopWordListCollection != null) {
 
             if (parseType == ParseType.REMOVE_ALL_STOP_WORDS) {
-                for (StopWordList stopWordList : stopWordListCollection) {
-                    termWordList.removeIf(stopWordList::isStopWord);
-                }
+                // Remove all stop words from all stop word lists (if multiple).
+                stopWordListCollection.forEach(swl -> termWordList.removeIf(swl::isStopWord));
+
             } else if (parseType == ParseType.REMOVE_TERMS_WITH_ONLY_STOP_WORDS) {
 
-                boolean isOnlyStopWords = false;
-                for (StopWordList stopWordList : stopWordListCollection) {
-                    int noOfStopWords = 0;
-
-                    for (String word : termWordList) {
-                        if (stopWordList.isStopWord(word))
-                            noOfStopWords++;
-                    }
-
-                    isOnlyStopWords = (noOfStopWords == termWordList.size()) || isOnlyStopWords;
-                }
-
-                if (isOnlyStopWords) {
-                    termWordList.clear();
-                }
+                stopWordListCollection.stream()
+                        .filter(list -> !termWordList.isEmpty()) // no need to continue if list is already empty.
+                        .filter(list -> termWordList.stream().allMatch(list::isStopWord))
+                        .findAny()
+                        .ifPresent(list -> termWordList.clear());
             }
         }
     }
 
-    /**
+    /*
      * Retrieves all terms in a sentence as a list of words.
      *
      * @param sentence           The sentence for which to retrieve the terms.
      * @param maxNoOfWordsInTerm The max number of words in a term. Eg 3 will retrieve words, be-grams and tri-grams.
+     * @param stopWordListCollection The collection of stop word lists that will be used.
      * @return A list of list of words building up the terms found (including duplicates).
      */
     public static List<String> getAllTermsAsConcatStrings(String sentence, int maxNoOfWordsInTerm, List<StopWordList> stopWordListCollection) {

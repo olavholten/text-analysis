@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import se.imagick.ta.filter.ParseType;
 import se.imagick.ta.language.StopWordsEnglish;
-import se.imagick.ta.language.StopWordsSwedish;
 
 import java.util.List;
 import java.util.stream.Collectors;
