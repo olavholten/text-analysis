@@ -1,6 +1,6 @@
 # imagick-TextAnalysis
 
-TF-IDF (Term Frequency - Inverse Document Frequency) finds terms that are used more frequently in one document compared to other documents.
+TF-IDF (Term Frequency - Inverse Document Frequency) finds terms that are used more frequent in one document compared to other documents.
 It also removes terms that are present in all of the other documents (stop words etc), 
 making this algorithm more suitable for many small documents (such as articles) than a few large ones (such as books). 
 The larger the documents, the greater the number and the more versatile the subjects that those documents cover must be for the algorithm to give relevant output.
@@ -33,7 +33,7 @@ Just add the following dependency in your pom-file:
     <dependency>
         <groupId>se.imagick</groupId>
         <artifactId>TA</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </dependency>
     
 Currently, this project is not added to Maven central so you must build it yourself using
