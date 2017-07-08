@@ -27,11 +27,11 @@ package se.imagick.ta.tfidf;
 public class TFIDF {
 
     private Term term;
-    private double tfIdc;
+    private double tfIdf;
 
     public TFIDF(Term term, double frequency, double noOfDocsWithTerm, double totNoOfDocs) {
         this.term = term;
-        this.tfIdc = frequency * Math.log(totNoOfDocs / noOfDocsWithTerm);
+        this.tfIdf = frequency * Math.log(totNoOfDocs / noOfDocsWithTerm);
     }
 
     public Term getTerm() {
@@ -39,10 +39,10 @@ public class TFIDF {
     }
 
     public double getTfIdf() {
-        return tfIdc;
+        return tfIdf;
     }
 
     public String toString() {
-        return "Term: " + term + ", tfIdc: " + getTfIdf();
+        return "Term: " + term + ", tfIdf: " + getTfIdf();
     }
 }

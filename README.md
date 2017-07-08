@@ -25,7 +25,7 @@ document1.setName("All chars").setHeadline("All chars in the alphabet").addConte
 document2.addContent(new FileInputStream("/mypath/mydocument.txt")).close();
 <br/>
 List&lt;TF&gt; tfList = document1.getTF(50, true); // Retrieves the 50 most common words with stop word list 
-List&lt;TFIDF&gt; TFIDFList = document1.getTFIDF(50); // Retrieves the words with the 50 highest TF-IDC scores.
+List&lt;TFIDF&gt; TFIDFList = document1.getTFIDF(50); // Retrieves the words with the 50 highest TF-IDF scores.
 </pre>
 
 Just add the following dependency in your pom-file:
