@@ -2,6 +2,7 @@ package se.imagick.ta.language;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Swedish stop word list.
@@ -49,5 +50,10 @@ public class StopWordsSwedish extends StopWordList {
     @Override
     public String getLanguage() {
         return "sv";
+    }
+
+    @Override
+    Optional<String> getCategory() {
+        return Optional.empty();
     }
 }

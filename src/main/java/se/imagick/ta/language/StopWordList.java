@@ -3,6 +3,7 @@ package se.imagick.ta.language;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Abstract super class of all stop word lists.
@@ -60,4 +61,12 @@ public abstract class StopWordList {
      * @return The language (or type of list).
      */
     abstract String getLanguage();
+
+    /**
+     * Category may be used to mark a certain subject that this StopWordList is
+     * designed to detect.
+     * @return Empty optional if basic stop word list for a certain language,
+     * otherwise the name of the category.
+     */
+    abstract Optional<String> getCategory();
 }

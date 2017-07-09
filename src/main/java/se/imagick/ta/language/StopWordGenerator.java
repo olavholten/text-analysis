@@ -16,7 +16,11 @@ import java.util.stream.Collectors;
 /**
  * Creates a stop word list using several documents. To have some confidence in a stop word list
  * there must be at least 1-2 million words, preferably from many different sources for texts
- * (books, articles, etc). To make a subject specific stop word list, a generic one should be run
+ * (books, articles, authors, publishers etc). If only a few books are used, the names of the
+ * main characters will show up as frequent words, and the author's choice of words will highly
+ * impact the result.
+ *
+ * To make a subject specific stop word list, a generic one should be run
  * on the texts first to filter out the usual suspects. The sources must be carefully selected
  * to be only in the category you want to find. And please remember that stop word for a certain
  * subject, such as medical or fashion articles, changes quickly over time. They will have to be
@@ -46,6 +50,7 @@ import java.util.stream.Collectors;
 public class StopWordGenerator {
 
     public static void main(String[] args) throws Exception {
+        // Example code.
         String rootPath = "src/main/resources/books";
         String subPath = "en";
         List<Term> sortedTerms = getStopWords(rootPath, subPath);
@@ -86,7 +91,8 @@ public class StopWordGenerator {
         List<String> rowList = new ArrayList<>();
 
         for (File textFile : textFiles) {
-            BufferedReader bufferedReader = new BufferedReader(EncodingCorrectReader.getReader(textFile).orElseThrow(() -> new IOException("Error reading file")));
+            BufferedReader bufferedReader = new BufferedReader(EncodingCorrectReader.getReader(textFile)
+                    .orElseThrow(() -> new IOException("Error reading file")));
             bufferedReader.lines().forEach(rowList::add);
         }
 

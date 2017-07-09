@@ -2,6 +2,7 @@ package se.imagick.ta.language;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * English stop word list.
@@ -42,5 +43,10 @@ public class StopWordsEnglish extends StopWordList {
     @Override
     public String getLanguage() {
         return "en";
+    }
+
+    @Override
+    Optional<String> getCategory() {
+        return Optional.empty();
     }
 }

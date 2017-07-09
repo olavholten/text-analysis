@@ -6,11 +6,13 @@ import se.imagick.ta.tfidf.Term;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 /**
- * Detects a document language by filtering it with several stop word lists.
- * The language associated with the stop word list that filters out the most words
+ * Detects a which stop word list filters out the most words.
+ * Can be used for finding out the language of a document or which category it belongs to.
+ * The language associated with the language stop word list that filters out the most words
  * is assumed to be the correct one. A rather naive method that needs more than a few words.
  * Could also be used to detect the document category by using stop word lists that
  * contains category specific words.
@@ -35,18 +37,17 @@ import java.util.stream.IntStream;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * TODO retrie percentage of words sorted out by the stop word list for confidence evaluation.
  */
-public class LanguageDetector {
+public class StopWordListDetector {
 
-    public static String detect(String document, StopWordList... stopWordsListCollection) {
+    public static Optional<String> detect(String document, StopWordList... stopWordsListCollection) {
 
         IntStream chars = document.codePoints();
         StringBuilder documentSb = new StringBuilder();
         chars.filter(CharacterUtils::isAlphaOrSpace).forEach(e -> documentSb.append(Character.toChars(e)));
 
         List<Term> termList = ParseUtils.getAllTermsInSentence(documentSb.toString(), 1, new ArrayList<>(), null);
-        String reccordLanguage = "Not detected";
+        String reccordLanguage = null;
         double reccord = 0;
 
         for (StopWordList stopWords : stopWordsListCollection) {
@@ -59,6 +60,7 @@ public class LanguageDetector {
             }
         }
 
-        return reccordLanguage;
+        return Optional.ofNullable(reccordLanguage);
     }
+
 }
