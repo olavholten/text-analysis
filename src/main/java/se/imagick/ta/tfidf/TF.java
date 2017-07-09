@@ -1,7 +1,7 @@
 package se.imagick.ta.tfidf;
 
 /**
- * TF, Term Frequency. How many times a Term occurs.
+ * TF, Term Frequency. The total number of times a Term occurs in the library.
  *
  * The MIT License (MIT)
  * Copyright (c) 2017 Olav Holten
