@@ -3,10 +3,11 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:8-jdk
+
     working_directory: ~/repo
-      environment:
-        # Customize the JVM maximum heap limit
-        MAVEN_OPTS: -Xmx3200m
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m
 
     steps:
       - checkout
@@ -15,9 +16,9 @@ jobs:
     docker:
       - image: circleci/openjdk:8-jdk
     working_directory: ~/repo
-      environment:
-        # Customize the JVM maximum heap limit
-        MAVEN_OPTS: -Xmx3200m
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m
     steps:
       - checkout
       - run: mvn test
