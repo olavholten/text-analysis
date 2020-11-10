@@ -16,19 +16,41 @@ import java.util.stream.Collectors;
 /**
  * Creates a stop word list using several documents. To have some confidence in a stop word list
  * there must be at least 1-2 million words, preferably from many different sources for texts
- * (books, articles, etc). To make a subject specific stop word list, a generic one should be run
+ * (books, articles, authors, publishers etc). If only a few books are used, the names of the
+ * main characters will show up as frequent words, and the author's choice of words will highly
+ * impact the result.
+ *
+ * To make a subject specific stop word list, a generic one should be run
  * on the texts first to filter out the usual suspects. The sources must be carefully selected
  * to be only in the category you want to find. And please remember that stop word for a certain
  * subject, such as medical or fashion articles, changes quickly over time. They will have to be
  * updated regularly to be effective.
  *
- * Created by
- * User: Olav Holten
- * Date: 2017-03-02
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Olav Holten
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 public class StopWordGenerator {
 
     public static void main(String[] args) throws Exception {
+        // Example code.
         String rootPath = "src/main/resources/books";
         String subPath = "en";
         List<Term> sortedTerms = getStopWords(rootPath, subPath);
@@ -69,7 +91,8 @@ public class StopWordGenerator {
         List<String> rowList = new ArrayList<>();
 
         for (File textFile : textFiles) {
-            BufferedReader bufferedReader = new BufferedReader(EncodingCorrectReader.getReader(textFile).orElseThrow(() -> new IOException("Error reading file")));
+            BufferedReader bufferedReader = new BufferedReader(EncodingCorrectReader.getReader(textFile)
+                    .orElseThrow(() -> new IOException("Error reading file")));
             bufferedReader.lines().forEach(rowList::add);
         }
 
