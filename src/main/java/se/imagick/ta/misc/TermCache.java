@@ -26,6 +26,7 @@ public class TermCache {
      *     .collect(Collectors.toList());
      * </pre>
      *
+     * @param term The term that wich we search a cached instance of.
      * @return A cached term.
      */
     public Term getCached(Term term) {

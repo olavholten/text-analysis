@@ -1,7 +1,8 @@
 package se.imagick.ta.tfidf;
 
+import se.imagick.ta.filter.CharacterUtils;
 import se.imagick.ta.filter.EncodingCorrectReader;
-import se.imagick.ta.filter.TextUtils;
+import se.imagick.ta.filter.ParseUtils;
 import se.imagick.ta.misc.TermCache;
 
 import java.io.*;
@@ -78,14 +79,9 @@ public class Document {
 
         validateOpen();
         Optional<Reader> reader = EncodingCorrectReader.getReader(textResource);
-        BufferedReader bufferedReader = new BufferedReader(reader.orElse(null));
+        BufferedReader bufferedReader = new BufferedReader(reader.orElseThrow(() -> new IOException("Error reading file")));
         StringBuilder sb = new StringBuilder();
-        String line;
-
-        while ((line = bufferedReader.readLine()) != null) {
-            sb.append(TextUtils.addSpaceToEndOfLine(line.trim()));
-        }
-
+        bufferedReader.lines().forEach(line -> sb.append(CharacterUtils.addSpaceToEndOfLine(line.trim())));
         addContent(sb.toString());
 
         return this;
@@ -181,9 +177,9 @@ public class Document {
     private void decomposeAndAddTerms(String content, int maxNoOfWordsInTerms) {
 
         if (content != null) {
-            String cleanContent = TextUtils.cleanString(content);
-            List<Term> termList = TextUtils.devideSentences(cleanContent).stream()
-                    .map(str -> TextUtils.getAllTerms(str, maxNoOfWordsInTerms, library.getStopWordLists(), library.getParseType()))
+            String cleanContent = CharacterUtils.cleanString(content);
+            List<Term> termList = CharacterUtils.devideSentences(cleanContent).stream()
+                    .map(str -> ParseUtils.getAllTermsInSentence(str, maxNoOfWordsInTerms, library.getStopWordLists(), library.getParseType()))
                     .flatMap(List::stream)
                     .map(termCache::getCached) // Releases memory to GC.
                     .collect(Collectors.toList());
@@ -205,12 +201,10 @@ public class Document {
     }
 
     private int compareTF(TF tf1, TF tf2) {
-        double delta = tf2.getFrequency() - tf1.getFrequency();
-        return (delta < 0 ? -1 : (delta == 0) ? 0 : 1);
+        return (int)Math.signum(tf2.getFrequency() - tf1.getFrequency());
     }
 
     private int compareTFIDC(TFIDF TFIDF1, TFIDF TFIDF2) {
-        double delta = TFIDF2.getTfIdf() - TFIDF1.getTfIdf();
-        return (delta < 0 ? -1 : (delta == 0) ? 0 : 1);
+        return (int)Math.signum(TFIDF2.getTfIdf() - TFIDF1.getTfIdf());
     }
 }

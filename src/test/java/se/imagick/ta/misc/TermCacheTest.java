@@ -34,10 +34,8 @@ public class TermCacheTest {
         Term cachedTerm = cache.getCached(term2);
 
         Assert.assertTrue(term2 != cachedTerm); // Not the same instance
-        Assert.assertEquals(term2, cachedTerm); // Does however have the sam contence.
+        Assert.assertEquals(term2, cachedTerm); // But does have the same contence.
         Assert.assertEquals(term1, term2);
         Assert.assertTrue(term1 == cachedTerm);
     }
-
-
 }

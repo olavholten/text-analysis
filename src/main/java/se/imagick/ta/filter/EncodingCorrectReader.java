@@ -16,7 +16,7 @@ public class EncodingCorrectReader {
     /**
      * Retrieves a java.io.Reader, using the detected file encoding for the inputStream.
      * @param filePathAndName The file path and name.
-     * @return A java.io.Reader using the (hopefully) correct file encoding (courtesy of IBM).
+     * @return A java.io.Reader using the (hopefully) correct character encoding (courtesy of IBM).
      * @throws IOException If the stream fails.
      */
     public static Optional<Reader> getReader(String filePathAndName) throws IOException {
@@ -27,7 +27,8 @@ public class EncodingCorrectReader {
     /**
      * Retrieves a java.io.Reader, using the detected file encoding for the inputStream.
      * @param inputStream The content as an java.io.InputStream.
-     * @return A java.io.Reader using the (hopefully) correct file encoding (courtesy of IBM).
+     * @return An Optional containing a java.io.Reader using the (hopefully) correct
+     * character encoding (courtesy of IBM).
      * @throws IOException If the stream fails.
      */
     public static Optional<Reader> getReader(InputStream inputStream) throws IOException {
@@ -41,6 +42,22 @@ public class EncodingCorrectReader {
         return Optional.ofNullable(reader);
     }
 
+
+    /**
+     * Retrieves a java.io.Reader, using the detected file encoding for the inputStream.
+     * @param textFile The content as an java.io.File.
+     * @return An Optional containing a java.io.Reader using the (hopefully) correct
+     * character encoding (courtesy of IBM).
+     * @throws IOException If the stream fails.
+     */
+    public static Optional<Reader> getReader(File textFile) throws IOException {
+
+        return getReader(new FileInputStream(textFile));
+    }
+
+    private static BufferedReader getEncodingCorrectReader(File textFile) throws IOException {
+        return new BufferedReader(EncodingCorrectReader.getReader(textFile).orElseThrow(() -> new IOException("Error reading file")));
+    }
 
     /**
      * Retrieves a com.ibm.icu.text.CharsetMatch, using the detected file encoding for the inputStream.

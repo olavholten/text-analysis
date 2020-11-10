@@ -1,11 +1,12 @@
 package se.imagick.ta.language;
 
-import se.imagick.ta.filter.ParseType;
-import se.imagick.ta.filter.TextUtils;
-import se.imagick.ta.misc.TermCache;
+import se.imagick.ta.filter.EncodingCorrectReader;
+import se.imagick.ta.filter.ParseUtils;
 import se.imagick.ta.tfidf.Term;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,107 +14,97 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * Creates a stop word list using several documents. To have some confidence in a stop word list
+ * there must be at least 1-2 million words, preferably from many different sources for texts
+ * (books, articles, etc). To make a subject specific stop word list, a generic one should be run
+ * on the texts first to filter out the usual suspects. The sources must be carefully selected
+ * to be only in the category you want to find. And please remember that stop word for a certain
+ * subject, such as medical or fashion articles, changes quickly over time. They will have to be
+ * updated regularly to be effective.
+ *
  * Created by
  * User: Olav Holten
  * Date: 2017-03-02
  */
 public class StopWordGenerator {
 
-    public static void main(String [] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         String rootPath = "src/main/resources/books";
         String subPath = "en";
-        List<String> rowList = getRowListFromDirectoryFiles(rootPath, subPath);
-        List<Term> allTerms = parseDocumentRows(rowList);
-        List<Term> sortedTerms = aggregateAndSortInFrequency(allTerms);
-
+        List<Term> sortedTerms = getStopWords(rootPath, subPath);
         sortedTerms.forEach(term -> System.out.print("\"" + term.getJoinedTerm() + "\", "));
     }
 
-    static List<Term> parseDocumentRows(List<String> contentList) {
-        TermCache termCache = new TermCache();
-        StringBuilder content = new StringBuilder(20000);
-        contentList.forEach(line -> content.append(line).append(" "));
-        String cleanContent = TextUtils.cleanString(content.toString());
+    public static List<Term> getStopWords(String rootPath, String subPath) throws Exception {
+        List<String> rowList = getRowListFromDirectoryFiles(rootPath, subPath);
+        List<Term> allTerms = ParseUtils.parseDocumentRows(rowList);
 
-        return TextUtils.devideSentences(cleanContent).stream()
-                .map(str -> TextUtils.getAllTerms(str, 1, null, ParseType.KEEP_ALL_WORDS))
-                .flatMap(List::stream)
-                .map(termCache::getCached) // Releases memory to GC.
-                .collect(Collectors.toList());
+        return sortTermsInFrequencyOrder(allTerms);
     }
 
-    static List<String> readFile(File textFile, List<String> rowList) throws IOException {
-//        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(textFile), "UTF-8"))) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(textFile), "windows-1252"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                rowList.add(line);
-            }
-        }
+    public static void printoutTermsInFrequencyOrder(String rootPath, String subPath) throws Exception {
+        List<String> rowList = getRowListFromDirectoryFiles(rootPath, subPath);
+        List<Term> allTerms = ParseUtils.parseDocumentRows(rowList);
 
-        return rowList;
-    }
-
-    static List<String> getRowListFromDirectoryFiles(String rootPath, String subPath) throws Exception {
-        List<String> rowList = new ArrayList<>();
-
-        File languageDir = new File(rootPath, subPath);
-        File[] textFiles = languageDir.listFiles();
-
-        for (File file : textFiles) {
-            readFile(file, rowList);
-        }
-
-        return rowList;
-    }
-
-    static List<Term> aggregateAndSortInFrequency(List<Term> wordList) {
-        Map<Term, WordSortEntry> wordMap = aggregateWords(wordList);
-
-        List<WordSortEntry> sortEntryList = new ArrayList<>(wordMap.values());
-        sortEntryList.sort((e1, e2) -> e2.noof.compareTo(e1.noof));
-        ArrayList<Term> sortedWordList = new ArrayList<>(sortEntryList.size());
-        sortEntryList.forEach(term -> sortedWordList.add(term.term));
-
-        double totNoof = wordList.size();
+        double totNoof = allTerms.size();
         double noofSoFar = 0;
         int no = 0;
 
-        for (WordSortEntry entry : sortEntryList) {
-            if (no < 300) {
-                noofSoFar += entry.noof;
-                Term term = entry.term;
-//                String translated = translator.translate(word);
-                int procSoFar = (int) (100 * noofSoFar / totNoof);
+        List<TermFrequencySortEntry> sortEntries = aggregateWords(allTerms).values().stream()
+                .sorted()
+                .limit(300)
+                .collect(Collectors.toList());
 
-//                System.out.println(no++ + " : " + procSoFar + "% : " + entry.word + " : " + translated) ;
-                System.out.println(no++ + " : " + procSoFar + "% : " + entry.term);
-            }
+        for (TermFrequencySortEntry entry : sortEntries) {
+            noofSoFar += entry.noof;
+            int procSoFar = (int) (100 * noofSoFar / totNoof);
+            System.out.println(no++ + " : " + procSoFar + "% : " + entry.term);
         }
-
-        return sortedWordList;
     }
 
-    private static Map<Term, WordSortEntry> aggregateWords(List<Term> termList) {
-        Map<Term, WordSortEntry> wordMap = new HashMap<>();
+    private static List<String> getRowListFromDirectoryFiles(String rootPath, String subPath) throws Exception {
 
-        for (Term term : termList) {
-            WordSortEntry sortEntry = wordMap.computeIfAbsent(term, WordSortEntry::new);
-            sortEntry.noof++;
+        File languageDir = new File(rootPath, subPath);
+        File[] textFiles = languageDir.listFiles();
+        List<String> rowList = new ArrayList<>();
+
+        for (File textFile : textFiles) {
+            BufferedReader bufferedReader = new BufferedReader(EncodingCorrectReader.getReader(textFile).orElseThrow(() -> new IOException("Error reading file")));
+            bufferedReader.lines().forEach(rowList::add);
         }
 
-        return wordMap;
+        return rowList;
     }
 
-    private static class WordSortEntry {
+    private static List<Term> sortTermsInFrequencyOrder(List<Term> wordList) {
 
-        public Term term;
-        public Long noof;
+        return aggregateWords(wordList).values().stream()
+                .sorted()
+                .map(entry -> entry.term)
+                .collect(Collectors.toList());
+    }
+
+    private static Map<Term, TermFrequencySortEntry> aggregateWords(List<Term> termList) {
+
+        Map<Term, TermFrequencySortEntry> TermFrequencyMap = new HashMap<>();
+        termList.forEach(term -> TermFrequencyMap.computeIfAbsent(term, TermFrequencySortEntry::new).noof++);
+        return TermFrequencyMap;
+    }
+
+    private static class TermFrequencySortEntry implements Comparable<TermFrequencySortEntry> {
+
+        Term term;
+        Long noof;
 
         // Convenience method for map.computeIfAbsent.
-        WordSortEntry(Term term) {
+        TermFrequencySortEntry(Term term) {
             this.term = term;
             this.noof = 0L;
+        }
+
+        @Override
+        public int compareTo(TermFrequencySortEntry entry) {
+            return (int) (entry.noof - this.noof);
         }
     }
 }
